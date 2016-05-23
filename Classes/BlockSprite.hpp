@@ -20,8 +20,16 @@ public:
     ~BlockSprite();
     virtual void onEnter() override;
     virtual void draw(Renderer *renderer, const Mat4 &transform, uint32_t flags) override;
-    bool initWithColor(Color4F color,Size size);
-    static BlockSprite* createWithColor(Color4F color,Size size);
+    bool initWithColor(bool canTap,Color4F color,Size size);
+    static BlockSprite* createWithColor(bool canTap ,Color4F color,Size size);
+    bool canTap(){return _isCanTap;};
+    bool inUsing(){return _isInUsing;};
+    void setUsing(bool inUsing){_isInUsing = inUsing;};
+    void setCanTap(bool canTap){_isCanTap = canTap;};
+    void setBlockColor(Color4F color){_color = color;};
+    void reset(bool canTap,bool inUsing,Color4F color);
+    void blink();
+    void playAction();
 protected:
     void onDraw(const cocos2d::Mat4 &transform, uint32_t flags);
 
@@ -30,6 +38,9 @@ private:
     Size _size;
     CustomCommand _customCommand;
     bool _isInUsing;
+    bool _isCanTap;
+    Color4F _blinkColor;
+    float _blinkDur;
 };
 
 #endif /* BlockSprite_hpp */

@@ -29,26 +29,22 @@ bool MainScene::init(){
         return false;
     }
     _uiNode = CSLoader::getInstance()->createNode("ui/MainScene.csb");
-    Node* n = CSLoader::getInstance()->createNode("ui/eff_gates_0002.csb");
     
-    timeline::ActionTimeline* timeline1 = CSLoader::getInstance()->createTimeline("ui/eff_gates_0002.csb");
-    timeline1->play("eff_gates_0002_idle", true);
-    n->runAction(timeline1);
-    
-    n->setPosition(Vec2(300,500));
-    _uiNode->addChild(n);
-//    Armature* arm = dynamic_cast<Armature*>(_uiNode->getChildByName("ArmatureNode_1"));
-//    arm->getAnimation()->play("eff_gates_0002_idle");
     timeline::ActionTimeline* timeline = CSLoader::getInstance()->createTimeline("ui/MainScene.csb");
     timeline->play("idel", true);
     _uiNode->runAction(timeline);
     
-    Button* startButton = dynamic_cast<Button*>(_uiNode->getChildByName("start_button"));
-    auto callback = [this](Ref* ref){
-        auto gameScene = GameScene::createScene();
-        Director::getInstance()->replaceScene(gameScene);
-    };
-    startButton->addClickEventListener(callback);
+    for (int i = 1; i<=7; i++) {
+        std::string btnName = StringUtils::format("Panel_%d",i);
+        Layout* startButton = dynamic_cast<Layout*>(_uiNode->getChildByName(btnName));
+        
+        auto callback = [this](Ref* ref){
+            auto gameScene = GameScene::createScene();
+            Director::getInstance()->replaceScene(gameScene);
+        };
+        startButton->addClickEventListener(callback);
+
+    }
     return true;
 }
 
@@ -61,5 +57,13 @@ Scene* MainScene::createScene(){
 
 void MainScene::onEnter(){
     Layer::onEnter();
+    
+//    Sprite* s =Sprite::create("res/button_startCN1.png");
+//    s->setPosition(300,500);
+//    
+//    auto action = MoveTo::create(2, Vec2(300,800));
+//    s->runAction(EaseBackOut::create(action));
+//    this->addChild(s);
     this->addChild(_uiNode);
+    
 }

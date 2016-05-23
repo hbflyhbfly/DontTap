@@ -10,7 +10,8 @@
 
 BlockSprite::BlockSprite():
 _isInUsing(false),
-_color(Color4F::WHITE){
+_color(Color4F::WHITE),
+_blinkColor(Color4F::RED){
     
 }
 
@@ -18,20 +19,21 @@ BlockSprite::~BlockSprite(){
     
 }
 
-bool BlockSprite::initWithColor(cocos2d::Color4F color,Size size){
+bool BlockSprite::initWithColor(bool canTap,cocos2d::Color4F color,Size size){
     if (!Node::init()) {
         return false;
     }
     _color = color;
     _size = size;
+    _isCanTap = canTap;
     
     return true;
 }
 
-BlockSprite* BlockSprite::createWithColor(Color4F color,Size size)
+BlockSprite* BlockSprite::createWithColor(bool canTap,Color4F color,Size size)
 {
     BlockSprite *sprite = new (std::nothrow) BlockSprite();
-    if (sprite && sprite->initWithColor(color,size))
+    if (sprite && sprite->initWithColor(canTap,color,size))
     {
         sprite->autorelease();
         return sprite;
@@ -40,7 +42,18 @@ BlockSprite* BlockSprite::createWithColor(Color4F color,Size size)
     return nullptr;
 }
 
+void BlockSprite::reset(bool canTap,bool inUsing,Color4F color){
+    _color = color;
+    _isCanTap = canTap;
+    _isInUsing = inUsing;
+}
+
+void BlockSprite::blink(){
+    _blinkDur = 1.0f;
+    _color = _blinkColor;
+}
 void BlockSprite::onDraw(const cocos2d::Mat4 &transform, uint32_t flags){
+    
     
     int nVertices = 0;
     Vec2 vertices1[4];
@@ -80,13 +93,27 @@ void BlockSprite::onDraw(const cocos2d::Mat4 &transform, uint32_t flags){
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     
     //网格
-    for (int i =0; i<4; i++) {
-        colors1[i] = Color4F::GRAY;
-    }
+    nVertices = 0;
+    vertices1[nVertices] = Vec2(0, 0);
+    colors1[nVertices++] = Color4F::BLACK;
+    
+    vertices1[nVertices] = Vec2(_size.width, 0);
+    colors1[nVertices++] = Color4F::BLACK;
+    
+    vertices1[nVertices] = Vec2(_size.width, _size.height);
+    colors1[nVertices++] = Color4F::BLACK;
+    
+    vertices1[nVertices] = Vec2(0, _size.height);
+    colors1[nVertices++] = Color4F::BLACK;
+    
+
+    
+
+
     glVertexAttribPointer(GLProgram::VERTEX_ATTRIB_POSITION,2, GL_FLOAT, GL_FALSE, 0, vertices1);
     glVertexAttribPointer(GLProgram::VERTEX_ATTRIB_COLOR, 4, GL_FLOAT, GL_FALSE, 0, colors1);
     glBlendFunc(CC_BLEND_SRC, CC_BLEND_DST);
-    glDrawArrays(GL_LINES, 0, 4);
+    glDrawArrays(GL_LINE_LOOP, 0, 4);
 
 }
 

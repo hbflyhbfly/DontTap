@@ -1,0 +1,58 @@
+{
+    "game_1": {
+        "type": "classic",
+        "sub_type": "number",
+        "value": 25
+    },
+    "game_2": {
+        "type": "classic",
+        "sub_type": "number",
+        "value": 50
+    },
+    "game_3": {
+        "type": "classic",
+        "sub_type": "change",
+        "value": 25
+    },
+    "game_4": {
+        "type": "classic",
+        "sub_type": "pro",
+        "value": 50
+    },
+    "game_5": {
+        "type": "classic",
+        "sub_type": "size",
+        "value": 5
+    },
+    "game_6": {
+        "type": "classic",
+        "sub_type": "size",
+        "value": 6
+    },
+    "game_7": {
+        "type": "arcade",
+        "sub_type": "normal",
+        "value": 25
+    },
+    "game_8": {
+        "type": "arcade",
+        "sub_type": "faster",
+        "value": 50
+    },
+    "game_8": {
+        "type": "arcade",
+        "sub_type": "reverse",
+        "value": 50
+    },
+    "game_8": {
+        "type": "arcade",
+        "sub_type": "size",
+        "value": 5
+    },
+    "game_8": {
+        "type": "arcade",
+        "sub_type": "size",
+        "value": 6
+    }
+
+}

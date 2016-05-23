@@ -14,8 +14,15 @@
 #include "BlockSprite.hpp"
 
 USING_NS_CC;
+typedef std::vector<BlockSprite*> VECTOR_BLOCK;
+typedef std::list<VECTOR_BLOCK> LIST_VECTOR_BLOCK;
 
-class GameScene:public cocos2d::Layer{
+typedef enum{
+    ACTION_BLOCK_MOVE_DONE,
+    ACTION_BLOCK_
+} ACTION_TYPE;
+
+class GameScene:public cocos2d::LayerColor{
 public:
     virtual bool init() override;
     virtual void onEnter() override;
@@ -28,24 +35,38 @@ public:
     void onTouchMoved(Touch *touch, Event *unused_event) override;
     void onTouchEnded(Touch *touch, Event *unused_event) override;
     void onTouchCancelled(Touch *touch, Event *unused_event) override;
+    void gameOver();
 private:
     void addBlock();
     void setBackgroung();
+    void checkPopRow(float dt = .0f);
+    void checkPosition(float dt = .0f);
+    void checkOver(float dt = .0f);
+    void checkAction(ACTION_TYPE action);
     cocos2d::Color4F randomBrightColor();
     Vec2 tileCoordForPosition(Vec2 pos);
-    void update(float dt);
+    void resetOneRowWithPos(const VECTOR_BLOCK& row,bool isMovePos);
+    void update(float dt) override;
+    void move(float offset);
+    void tap(BlockSprite* block);
+    void change();
 protected:
     void onDraw(const cocos2d::Mat4 &transform, uint32_t flags);
     
 private:
     CustomCommand _customCommand;
-    cocos2d::Color4F _backgroundColor;
     cocos2d::Size _blockSize;
-    int _heigh;
+    Color4F _bgColor;
+    Color4F _blockColor;
+    cocos2d::Size _mapSize;
     cocos2d::Node* _uiNode;
     cocos2d::Layer* _blockLayer;
-    std::vector<Vec2> _blockPos;
-    std::vector<BlockSprite*> _blocks;
+
+    LIST_VECTOR_BLOCK _blocks;
+    LIST_VECTOR_BLOCK _unUsingBlocks;
+    float _curOffset;//移动偏移
+    float _gameTime;//当前时间
+    int _tabedBlockCount;//当前击中多少块
     
 };
 #endif /* GameScene_hpp */
