@@ -9,6 +9,7 @@
 #include "cocostudio/CocoStudio.h"
 #include "ui/UIButton.h"
 #include "GameScene.hpp"
+#include "GameController.hpp"
 USING_NS_CC;
 using namespace cocostudio;
 using namespace ui;
@@ -33,14 +34,27 @@ bool MainScene::init(){
     timeline::ActionTimeline* timeline = CSLoader::getInstance()->createTimeline("ui/MainScene.csb");
     timeline->play("idel", true);
     _uiNode->runAction(timeline);
-    
-    for (int i = 1; i<=7; i++) {
-        std::string btnName = StringUtils::format("Panel_%d",i);
-        Layout* startButton = dynamic_cast<Layout*>(_uiNode->getChildByName(btnName));
-        
-        auto callback = [this](Ref* ref){
-            auto gameScene = GameScene::createScene();
-            Director::getInstance()->replaceScene(gameScene);
+//    GameController::getInstance()->getGameData("Classic_25");
+
+    for (int i = 1; i<=9; i++) {
+        Layout* startButton = dynamic_cast<Layout*>(_uiNode->getChildByTag(i));
+        GameController* gameController = GameController::getInstance();
+        auto callback = [this,gameController](Ref* ref){
+            auto lay = dynamic_cast<Layout*>(ref);
+            int tag = lay->getTag();
+            if (tag == 8) {//more
+                
+            }else if(tag == 9){//songs
+                
+            }else{
+                GAME_TYPE gameType = (GAME_TYPE)tag;
+                rapidjson::Value group(rapidjson::kArrayType);
+                gameController->getGroupWithType(gameType, group);
+                rapidjson::Value& data = group[0];
+                
+                gameController->starGame(data["id"].GetString(),true);
+            }
+            
         };
         startButton->addClickEventListener(callback);
 

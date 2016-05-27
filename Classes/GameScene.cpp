@@ -12,20 +12,46 @@
 #include "time.h"
 #include "GameController.hpp"
 USING_NS_CC;
+USING_NS_CC_EXT;
+
 using namespace cocostudio;
 using namespace ui;
 
 #define BUFF_COUNT 3
 
+GameScene::GameScene():
+_uiNode(nullptr),
+_gameTime(0.0f),
+_isReallyStart(false){
+}
+GameScene::~GameScene(){
+    _groupData.Clear();
+}
 bool GameScene::init(){
     if (!LayerColor::init()) {
         return false;
     }
-    _bgColor = Color4F::WHITE;
-    _blockColor = randomBrightColor();
+    _groupData.SetArray();
+    GameController::getInstance()->getCurrentGroup(_groupData);
+    //ui
+    _uiNode = CSLoader::createNode("ui/GameScene.csb");
     
-    _uiNode = CSLoader::getInstance()->createNode("ui/GameScene.csb");
+    _startLabel = dynamic_cast<Node*>(_uiNode->getChildByName("start_node"));
+    auto listPanel = dynamic_cast<Layout*>(_uiNode->getChildByName("list_panel"));
+    _progress = dynamic_cast<LoadingBar*>(_uiNode->getChildByName("progress"));
+    _targetLabel = dynamic_cast<TextBMFont*>(_uiNode->getChildByName("target_label"));
+    _progress->setPercent(0);
+    _targetLabel->setString(StringUtils::format("%.3f\"",0.000));
     
+    //list
+    TableView* tableView = TableView::create(this,listPanel->getContentSize());
+    tableView->setDelegate(this);
+    tableView->setDirection(ScrollView::Direction::HORIZONTAL);
+    tableView->setBounceable(false);
+    tableView->setPosition(Vec2::ZERO);
+    listPanel->addChild(tableView);
+    
+    //back button
     Button* backButton = dynamic_cast<Button*>(_uiNode->getChildByName("back_button"));
     auto callback = [this](Ref* ref){
         auto mainScene = MainScene::createScene();
@@ -33,8 +59,10 @@ bool GameScene::init(){
     };
     backButton->addClickEventListener(callback);
     
+    //game content
+    _bgColor = Color4F::WHITE;
+    _blockColor = randomBrightColor();
     _blockLayer = Layer::create();
-    
     
     auto listener = EventListenerTouchOneByOne::create();
     
@@ -45,14 +73,7 @@ bool GameScene::init(){
     
     _eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
     
-    _mapSize = Size(5,5);
-    Size WIN_SIZE = Director::getInstance()->getWinSize();
-    int w = WIN_SIZE.width/_mapSize.width;
-    int h = WIN_SIZE.height/_mapSize.height;
-    if(w%2!=0) w +=1;
-    if(h%2!=0) h +=1;
-
-    _blockSize = Size(w,h);
+    setGameModel();
     
     return true;
 }
@@ -66,13 +87,23 @@ void GameScene::onEnter(){
     addBlock();
     
     this->addChild(_uiNode);
+    
     scheduleUpdate();
 }
 
+void GameScene::showModelList(bool isShow){
+    auto listPanel = dynamic_cast<Layout*>(_uiNode->getChildByName("list_panel"));
+    if (listPanel) {
+        listPanel->setVisible(isShow);
+    }
+
+}
 bool GameScene::onTouchBegan(Touch *touch, Event *unused_event){
     
     if(GameController::getInstance()->isGameOver()) return false;
-    
+    if (_startLabel->isVisible()) {
+        _startLabel->setVisible(false);
+    }
     Vec2 locT = touch->getLocation();
     Vec2 loc = _blockLayer->convertToNodeSpace(touch->getLocation());
     std::vector<BlockSprite*> row = _blocks.front();
@@ -85,8 +116,8 @@ bool GameScene::onTouchBegan(Touch *touch, Event *unused_event){
             }else{
                 block->blink();
                 gameOver();
-                GameController::getInstance()->gameOver();
             }
+            showModelList(false);
             isHit = true;
             break;
         }
@@ -109,8 +140,81 @@ void GameScene::onTouchCancelled(Touch *touch, Event *unused_event){
     
 }
 
+//tablevie delegate
+void GameScene::tableCellTouched(TableView* table, TableViewCell* cell)
+{
+    CCLOG("cell touched at index: %ld", cell->getIdx());
+    rapidjson::Value& data = _groupData[(int)cell->getIdx()];
+    if (data["id"].GetString() != GameController::getInstance()->getGameId()) {
+        GameController::getInstance()->starGame(data["id"].GetString(),false);
+    }
+}
+
+Size GameScene::tableCellSizeForIndex(TableView *table, ssize_t idx)
+{
+    return Size(200, 200);
+}
+
+TableViewCell* GameScene::tableCellAtIndex(TableView *table, ssize_t idx)
+{
+    auto string = StringUtils::format("%ld", idx);
+    TableViewCell *cell = table->dequeueCell();
+    if (!cell) {
+        
+        cell = TableViewCell::create();
+        setTableCell(idx,*cell,true);
+    }
+    else
+    {
+        setTableCell(idx,*cell);
+    }
+    
+    return cell;
+}
+
+void GameScene::setTableCell(ssize_t idx,TableViewCell& cell,bool isAdd){
+    if (isAdd) {
+        auto bg = BlockSprite::createWithColor(false, Color4F::YELLOW, Size(200,200));
+        bg->setAnchorPoint(Vec2::ZERO);
+        bg->setPosition(Vec2(0, 0));
+        cell.addChild(bg);
+        
+        auto label = Label::createWithSystemFont("", "Helvetica", 40.0);
+        label->setTextColor(Color4B::BLACK);
+        label->setPosition(Vec2(100,100));
+        label->setAnchorPoint(Vec2(0.5f,0.5f));
+        label->setTag(1);
+        cell.addChild(label);
+        
+        auto sprite = Sprite::create();
+        sprite->setPosition(Vec2(150,150));
+        sprite->setAnchorPoint(Vec2::ZERO);
+        sprite->setTag(2);
+        cell.addChild(sprite);
+    }
+    
+    auto label = dynamic_cast<Label*>(cell.getChildByTag(1));
+    if (_groupData.IsArray()) {
+        rapidjson::Value& arrayValue = _groupData[(int)idx];
+        std::string s = arrayValue["tid"].GetString();
+        label->setString(s);
+    }
+    auto sprite = dynamic_cast<Sprite*>(cell.getChildByTag(2));
+    sprite->setSpriteFrame("res/textures/ic_indicator.png");
+}
+
+ssize_t GameScene::numberOfCellsInTableView(TableView *table)
+{
+    return _groupData.Size();
+}
+
 void GameScene::update(float dt){
+    if (_isReallyStart) {
+        _gameTime += dt;
+    }
     checkPosition(dt);
+    checkOver(dt);
+    _targetLabel->setString(StringUtils::format("%.3f\"",_gameTime));
     
 }
 
@@ -118,10 +222,47 @@ void GameScene::checkPopRow(float dt){
     
 }
 
+void GameScene::setGameModel(){
+    
+    _mapSize = Size(GameController::getInstance()->getMapSize(),GameController::getInstance()->getMapSize());
+    Size WIN_SIZE = Director::getInstance()->getWinSize();
+    int w = WIN_SIZE.width/_mapSize.width;
+    int h = WIN_SIZE.height/_mapSize.height;
+    if(w%2!=0) w +=1;
+    if(h%2!=0) h +=1;
+    
+    _blockSize = Size(w,h);
+
+}
+
+void GameScene::resetGame(){
+    unscheduleUpdate();
+    _isReallyStart = false;
+    _gameTime = 0.0f;
+    _curOffset = 0.0f;
+    _tabedBlockCount = 0;
+    _progress->setPercent(0);
+    _targetLabel->setString(StringUtils::format("%.3f",_gameTime));
+    _blockLayer->removeAllChildren();
+    _blocks.clear();
+    _unUsingBlocks.clear();
+    _blockLayer->setPositionY(0);
+    _curOffset = _blockLayer->getPositionY();
+    
+}
+
+void GameScene::restartGame(){
+    resetGame();
+    setGameModel();
+    addBlock();
+    scheduleUpdate();
+}
 void GameScene::tap(BlockSprite* block){
+    if(!_isReallyStart) _isReallyStart = true;
     block->setBlockColor(Color4F::GRAY);
     move(-_blockSize.height);
     _tabedBlockCount ++;
+    _progress->setPercent((float)_tabedBlockCount/(float)GameController::getInstance()->getTargetCount());
 }
 
 void GameScene::checkPosition(float dt){
@@ -139,6 +280,38 @@ void GameScene::checkPosition(float dt){
 }
 
 void GameScene::checkOver(float dt){
+    GAME_TYPE type = GameController::getInstance()->getType();
+    GAME_SUBTYPE subType = GameController::getInstance()->getSubType();
+    
+    switch (type) {
+        case GAME_TYPE_CLASSICS:
+            if (GameController::getInstance()->getTargetCount() <= _tabedBlockCount) {
+                gameOver();
+            }
+            break;
+        case GAME_TYPE_ARCADE:
+            break;
+        case GAME_TYPE_ZEN:
+            if (GameController::getInstance()->getTimeLimit() <= _gameTime) {
+                gameOver();
+            }
+            
+            break;
+        case GAME_TYPE_RUSH:
+            
+            break;
+        case GAME_TYPE_RELAY:
+            
+            break;
+        case GAME_TYPE_ARCADE_2:
+            
+            break;
+        default:
+            break;
+    }
+}
+
+void GameScene::checkAction(ACTION_TYPE action){
     
 }
 
@@ -168,7 +341,7 @@ void GameScene::addBlock(){
     
     srand( (int)time( NULL ));
 
-    
+    std::vector<int> colors;
     for (int i = 1; i<=_mapSize.height+BUFF_COUNT; i++) {
         
         std::vector<BlockSprite*> row;
@@ -178,6 +351,10 @@ void GameScene::addBlock(){
             BlockSprite* block;
             if (canTapIndex == j) {
                 block = BlockSprite::createWithColor(true,_blockColor,_blockSize);
+                //start lable's position
+                if (i == 1) {
+                    _startLabel->setPosition(Vec2((j+0.5f)*_blockSize.width,_blockSize.height*(i+0.5f)));
+                }
             }else{
                 block = BlockSprite::createWithColor(false,_bgColor,_blockSize);
             }
@@ -192,7 +369,7 @@ void GameScene::addBlock(){
         
     }
     for (int j = 0 ; j < _mapSize.width; j++) {
-        BlockSprite* block = BlockSprite::createWithColor(true,Color4F::BLUE,_blockSize);
+        BlockSprite* block = BlockSprite::createWithColor(true,_bgColor,_blockSize);
         Vec2 pos(Vec2(j*_blockSize.width,0));
         block->setPosition(pos);
         _blockLayer->addChild(block);
@@ -211,11 +388,9 @@ void GameScene::change(){
         i++;
     }
 }
-Scene* GameScene::createScene(){
-    auto scene = Scene::create();
+GameScene* GameScene::createScene(){
     auto layer = GameScene::create();
-    scene->addChild(layer);
-    return scene;
+    return layer;
 }
 
 void GameScene::move(float offset){
@@ -247,9 +422,12 @@ Color4F GameScene::randomBrightColor(){
 
 void GameScene::gameOver(){
     
+    GameController::getInstance()->gameOver();
+
     unscheduleUpdate();
 }
 
+//ui
 void GameScene::onDraw(const cocos2d::Mat4 &transform, uint32_t flags){
 //    this->setGLProgram(GLProgramCache::getInstance()->getGLProgram(GLProgram::SHADER_NAME_POSITION_COLOR));
 //    CC_NODE_DRAW_SETUP();

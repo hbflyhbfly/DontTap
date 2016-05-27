@@ -21,7 +21,6 @@ public:
     virtual bool init() override;
     virtual void onEnter() override;
     CREATE_FUNC(MainScene);
-
 private:
     cocos2d::Node* _uiNode;
 };

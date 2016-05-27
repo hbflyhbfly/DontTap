@@ -12,21 +12,28 @@
 #include <stdio.h>
 #include "cocos2d.h"
 #include "BlockSprite.hpp"
-
+#include "extensions/cocos-ext.h"
+#include "ui/UILoadingBar.h"
+#include "UITextBMFont.h"
 USING_NS_CC;
+USING_NS_CC_EXT;
+
 typedef std::vector<BlockSprite*> VECTOR_BLOCK;
 typedef std::list<VECTOR_BLOCK> LIST_VECTOR_BLOCK;
+
 
 typedef enum{
     ACTION_BLOCK_MOVE_DONE,
     ACTION_BLOCK_
 } ACTION_TYPE;
 
-class GameScene:public cocos2d::LayerColor{
+class GameScene:public cocos2d::LayerColor,public TableViewDataSource, public TableViewDelegate{
 public:
+    GameScene();
+    ~GameScene();
     virtual bool init() override;
     virtual void onEnter() override;
-    static cocos2d::Scene* createScene();
+    static GameScene* createScene();
     
     CREATE_FUNC(GameScene);
     
@@ -35,7 +42,18 @@ public:
     void onTouchMoved(Touch *touch, Event *unused_event) override;
     void onTouchEnded(Touch *touch, Event *unused_event) override;
     void onTouchCancelled(Touch *touch, Event *unused_event) override;
+    
+    virtual void scrollViewDidScroll(cocos2d::extension::ScrollView* view)override {};
+    virtual void scrollViewDidZoom(cocos2d::extension::ScrollView* view)override {}
+    virtual void tableCellTouched(cocos2d::extension::TableView* table, cocos2d::extension::TableViewCell* cell)override;
+    virtual cocos2d::Size tableCellSizeForIndex(cocos2d::extension::TableView *table, ssize_t idx)override;
+    virtual cocos2d::extension::TableViewCell* tableCellAtIndex(cocos2d::extension::TableView *table, ssize_t idx)override;
+    virtual ssize_t numberOfCellsInTableView(cocos2d::extension::TableView *table)override;
+    
     void gameOver();
+    void restartGame();
+public:
+    Scene* _scene;
 private:
     void addBlock();
     void setBackgroung();
@@ -50,6 +68,10 @@ private:
     void move(float offset);
     void tap(BlockSprite* block);
     void change();
+    void setGameModel();
+    void resetGame();
+    void setTableCell(ssize_t idx,TableViewCell& cell,bool isAdd = false);
+    void showModelList(bool isShow);
 protected:
     void onDraw(const cocos2d::Mat4 &transform, uint32_t flags);
     
@@ -60,6 +82,9 @@ private:
     Color4F _blockColor;
     cocos2d::Size _mapSize;
     cocos2d::Node* _uiNode;
+    Node* _startLabel;
+    cocos2d::ui::LoadingBar* _progress;
+    cocos2d::ui::TextBMFont* _targetLabel;
     cocos2d::Layer* _blockLayer;
 
     LIST_VECTOR_BLOCK _blocks;
@@ -67,6 +92,9 @@ private:
     float _curOffset;//移动偏移
     float _gameTime;//当前时间
     int _tabedBlockCount;//当前击中多少块
+    bool _isReallyStart;
+
+    rapidjson::Value _groupData;
     
 };
 #endif /* GameScene_hpp */
