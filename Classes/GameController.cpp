@@ -5,7 +5,7 @@
 //  Created by Syuuhi on 5/7/16.
 //
 //
-
+#include "audio/include/SimpleAudioEngine.h"
 #include "GameController.hpp"
 #include "GameScene.hpp"
 #include "MainScene.hpp"
@@ -46,6 +46,8 @@ bool GameController::init(){
         CC_BREAK_IF(_doc.HasParseError());
         
         SpriteFrameCache::getInstance()->addSpriteFramesWithFile("plist/textures.plist");
+        
+        CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("");
         ret = true;
     } while (0);
     return true;

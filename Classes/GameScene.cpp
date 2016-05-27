@@ -32,7 +32,7 @@ GameScene::~GameScene(){
     _gameOverUINode->release();
 }
 bool GameScene::init(){
-    if (!LayerColor::initWithColor(Color4B::GREEN)) {
+    if (!LayerColor::initWithColor(Color4B(119,175,91,255))) {
         return false;
     }
     _groupData.SetArray();
@@ -137,7 +137,8 @@ void GameScene::touchEvent(Ref *pSender, Widget::TouchEventType type){
             if (name == "continue_btn") {
                 
             }else if(name == "over_btn"){
-                GameController::getInstance()->toScene(MAIN_SCENE);
+                showGameOverUI(GAME_FAIL);
+//                GameController::getInstance()->toScene(MAIN_SCENE);
             }else if(name == "share_btn"){
                 
             }else if(name == "back_btn"){
@@ -211,7 +212,7 @@ void GameScene::tableCellTouched(TableView* table, TableViewCell* cell)
 
 Size GameScene::tableCellSizeForIndex(TableView *table, ssize_t idx)
 {
-    return Size(200, 200);
+    return Size(260, 260);
 }
 
 TableViewCell* GameScene::tableCellAtIndex(TableView *table, ssize_t idx)
@@ -233,20 +234,20 @@ TableViewCell* GameScene::tableCellAtIndex(TableView *table, ssize_t idx)
 
 void GameScene::setTableCell(ssize_t idx,TableViewCell& cell,bool isAdd){
     if (isAdd) {
-        auto bg = BlockSprite::createWithColor(false, Color4F::YELLOW, Size(200,200));
+        auto bg = BlockSprite::createWithColor(false, Color4F::YELLOW, Size(260,260));
         bg->setAnchorPoint(Vec2::ZERO);
         bg->setPosition(Vec2(0, 0));
         cell.addChild(bg);
         
         auto label = Label::createWithSystemFont("", "Helvetica", 40.0);
         label->setTextColor(Color4B::BLACK);
-        label->setPosition(Vec2(100,100));
+        label->setPosition(Vec2(130,130));
         label->setAnchorPoint(Vec2(0.5f,0.5f));
         label->setTag(1);
         cell.addChild(label);
         
         auto sprite = Sprite::create();
-        sprite->setPosition(Vec2(150,150));
+        sprite->setPosition(Vec2(180,180));
         sprite->setAnchorPoint(Vec2::ZERO);
         sprite->setTag(2);
         cell.addChild(sprite);
@@ -524,7 +525,7 @@ void GameScene::showGameOverUI(GAME_RESULT result){
                 this->addChild(_gameOverUINode);
             }
             _gameOverAction->play("game_success", true);
-            layout->setBackGroundColor(Color3B::GREEN);
+            layout->setBackGroundColor(Color3B(119,175,91));
             //Color3B(237,79,79)
             break;
         case GAME_FAIL:
@@ -532,7 +533,7 @@ void GameScene::showGameOverUI(GAME_RESULT result){
                 this->addChild(_gameOverUINode);
             }
             _gameOverAction->play("game_fail", true);
-            layout->setBackGroundColor(Color3B::RED);
+            layout->setBackGroundColor(Color3B(207,81,80));
             //(97,236,79)
             break;
         case GAME_TAP_MISTAKE:
