@@ -262,7 +262,7 @@ void GameScene::tap(BlockSprite* block){
     block->setBlockColor(Color4F::GRAY);
     move(-_blockSize.height);
     _tabedBlockCount ++;
-    _progress->setPercent((float)_tabedBlockCount/(float)GameController::getInstance()->getTargetCount());
+    _progress->setPercent((float)_tabedBlockCount/(float)GameController::getInstance()->getTargetCount()*100);
 }
 
 void GameScene::checkPosition(float dt){
