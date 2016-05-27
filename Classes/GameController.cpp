@@ -8,7 +8,7 @@
 
 #include "GameController.hpp"
 #include "GameScene.hpp"
-
+#include "MainScene.hpp"
 USING_NS_CC;
 GameController* s_gameController = nullptr;
 
@@ -51,7 +51,19 @@ bool GameController::init(){
     return true;
 }
 
-void GameController::starGame(const std::string& gameId,bool isReplace){
+void GameController::toScene(GAME_SCENE_TYPE sceneType){
+    switch (sceneType) {
+        case MAIN_SCENE:
+            Director::getInstance()->replaceScene(MainScene::createScene());
+            break;
+        case GAME_SCENE:
+            Director::getInstance()->replaceScene(GameScene::createScene()->_scene);
+            break;
+        default:
+            break;
+    }
+}
+void GameController::startGame(const std::string& gameId,bool isReplace){
     this->setGame(gameId);
     if (isReplace) {
         _gameScene = GameScene::createScene();
@@ -61,6 +73,11 @@ void GameController::starGame(const std::string& gameId,bool isReplace){
     }else{
         _gameScene->restartGame();
     }
+    _over = false;
+}
+
+void GameController::startAgain(){
+    _gameScene->restartGame();
     _over = false;
 }
 void GameController::setGame(const std::string& gameId){

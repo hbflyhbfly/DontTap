@@ -22,28 +22,44 @@ using namespace ui;
 GameScene::GameScene():
 _uiNode(nullptr),
 _gameTime(0.0f),
-_isReallyStart(false){
+_isReallyStart(false),
+_canTabBlockCount(0),
+_tabedBlockCount(0)
+{
 }
 GameScene::~GameScene(){
     _groupData.Clear();
+    _gameOverUINode->release();
 }
 bool GameScene::init(){
-    if (!LayerColor::init()) {
+    if (!LayerColor::initWithColor(Color4B::GREEN)) {
         return false;
     }
     _groupData.SetArray();
     GameController::getInstance()->getCurrentGroup(_groupData);
     //ui
     _uiNode = CSLoader::createNode("ui/GameScene.csb");
-    
+    //game over ui
+    _gameOverUINode = CSLoader::createNode("ui/GameOver.csb");
+    _gameOverUINode->retain();
+    _gameOverAction = CSLoader::getInstance()->createTimeline("ui/GameOver.csb");
+    _gameOverUINode->runAction(_gameOverAction);
+    //tap error ui
+    _gameOverDialogUINode = CSLoader::createNode("ui/GameOverDialog.csb");
+    _gameOverDialogUINode->retain();
+    _gameOverDialogAction = CSLoader::getInstance()->createTimeline("ui/GameOverDialog.csb");
+    _gameOverDialogUINode->runAction(_gameOverDialogAction);
+
+//    _gameOverAction->retain();
+    //start label
     _startLabel = dynamic_cast<Node*>(_uiNode->getChildByName("start_node"));
-    auto listPanel = dynamic_cast<Layout*>(_uiNode->getChildByName("list_panel"));
+    //progress
     _progress = dynamic_cast<LoadingBar*>(_uiNode->getChildByName("progress"));
     _targetLabel = dynamic_cast<TextBMFont*>(_uiNode->getChildByName("target_label"));
     _progress->setPercent(0);
     _targetLabel->setString(StringUtils::format("%.3f\"",0.000));
-    
     //list
+    auto listPanel = dynamic_cast<Layout*>(_uiNode->getChildByName("list_panel"));
     TableView* tableView = TableView::create(this,listPanel->getContentSize());
     tableView->setDelegate(this);
     tableView->setDirection(ScrollView::Direction::HORIZONTAL);
@@ -51,14 +67,20 @@ bool GameScene::init(){
     tableView->setPosition(Vec2::ZERO);
     listPanel->addChild(tableView);
     
-    //back button
-    Button* backButton = dynamic_cast<Button*>(_uiNode->getChildByName("back_button"));
-    auto callback = [this](Ref* ref){
-        auto mainScene = MainScene::createScene();
-        Director::getInstance()->replaceScene(mainScene);
-    };
-    backButton->addClickEventListener(callback);
+    //button
+    auto shareButton = dynamic_cast<Button*>(_gameOverUINode->getChildByName("Panel")->getChildByName("share_btn"));
+    auto backButton = dynamic_cast<Button*>(_gameOverUINode->getChildByName("Panel")->getChildByName("back_btn"));
+    auto startAgainButton = dynamic_cast<Button*>(_gameOverUINode->getChildByName("Panel")->getChildByName("start_again_btn"));
+    shareButton->addTouchEventListener(CC_CALLBACK_2(GameScene::touchEvent, this));
+    backButton->addTouchEventListener(CC_CALLBACK_2(GameScene::touchEvent, this));
+    startAgainButton->addTouchEventListener(CC_CALLBACK_2(GameScene::touchEvent, this));
     
+    
+    auto overButton = dynamic_cast<Button*>(_gameOverDialogUINode->getChildByName("over_btn"));
+    auto continueButton = dynamic_cast<Button*>(_gameOverDialogUINode->getChildByName("continue_btn"));
+    overButton->addTouchEventListener(CC_CALLBACK_2(GameScene::touchEvent, this));
+    continueButton->addTouchEventListener(CC_CALLBACK_2(GameScene::touchEvent, this));
+
     //game content
     _bgColor = Color4F::WHITE;
     _blockColor = randomBrightColor();
@@ -98,6 +120,43 @@ void GameScene::showModelList(bool isShow){
     }
 
 }
+
+void GameScene::touchEvent(Ref *pSender, Widget::TouchEventType type){
+    Button* btn = dynamic_cast<Button*>(pSender);
+    const std::string name = btn->getName();
+    switch (type)
+    {
+        case Widget::TouchEventType::BEGAN:
+            break;
+            
+        case Widget::TouchEventType::MOVED:
+            break;
+            
+        case Widget::TouchEventType::ENDED:
+        {
+            if (name == "continue_btn") {
+                
+            }else if(name == "over_btn"){
+                GameController::getInstance()->toScene(MAIN_SCENE);
+            }else if(name == "share_btn"){
+                
+            }else if(name == "back_btn"){
+                GameController::getInstance()->toScene(MAIN_SCENE);
+            }else if(name == "start_again_btn"){
+                GameController::getInstance()->startAgain();
+                
+            }
+        }
+            break;
+            
+        case Widget::TouchEventType::CANCELED:
+            break;
+            
+        default:
+            break;
+    }
+}
+
 bool GameScene::onTouchBegan(Touch *touch, Event *unused_event){
     
     if(GameController::getInstance()->isGameOver()) return false;
@@ -115,7 +174,7 @@ bool GameScene::onTouchBegan(Touch *touch, Event *unused_event){
                 tap(block);
             }else{
                 block->blink();
-                gameOver();
+                gameOver(GAME_TAP_MISTAKE);
             }
             showModelList(false);
             isHit = true;
@@ -146,7 +205,7 @@ void GameScene::tableCellTouched(TableView* table, TableViewCell* cell)
     CCLOG("cell touched at index: %ld", cell->getIdx());
     rapidjson::Value& data = _groupData[(int)cell->getIdx()];
     if (data["id"].GetString() != GameController::getInstance()->getGameId()) {
-        GameController::getInstance()->starGame(data["id"].GetString(),false);
+        GameController::getInstance()->startGame(data["id"].GetString(),false);
     }
 }
 
@@ -239,7 +298,6 @@ void GameScene::resetGame(){
     unscheduleUpdate();
     _isReallyStart = false;
     _gameTime = 0.0f;
-    _curOffset = 0.0f;
     _tabedBlockCount = 0;
     _progress->setPercent(0);
     _targetLabel->setString(StringUtils::format("%.3f",_gameTime));
@@ -249,6 +307,10 @@ void GameScene::resetGame(){
     _blockLayer->setPositionY(0);
     _curOffset = _blockLayer->getPositionY();
     
+    _gameOverUINode->removeFromParentAndCleanup(false);
+    _gameOverDialogUINode->removeFromParentAndCleanup(false);
+    showModelList(true);
+    _startLabel->setVisible(true);
 }
 
 void GameScene::restartGame(){
@@ -266,6 +328,8 @@ void GameScene::tap(BlockSprite* block){
 }
 
 void GameScene::checkPosition(float dt){
+    if(checkAction(ACTION_BLOCK_MOVE)) return;
+    
     if (_unUsingBlocks.size() == 0) {
         return;
     }
@@ -276,7 +340,10 @@ void GameScene::checkPosition(float dt){
         resetOneRowWithPos(row,true);
         _unUsingBlocks.pop_back();
         _blocks.push_back(row);
+        
+        _canTabBlockCount++;
     }
+    
 }
 
 void GameScene::checkOver(float dt){
@@ -286,14 +353,14 @@ void GameScene::checkOver(float dt){
     switch (type) {
         case GAME_TYPE_CLASSICS:
             if (GameController::getInstance()->getTargetCount() <= _tabedBlockCount) {
-                gameOver();
+                gameOver(GAME_SUCCESS);
             }
             break;
         case GAME_TYPE_ARCADE:
             break;
         case GAME_TYPE_ZEN:
             if (GameController::getInstance()->getTimeLimit() <= _gameTime) {
-                gameOver();
+                gameOver(GAME_SUCCESS);
             }
             
             break;
@@ -311,8 +378,27 @@ void GameScene::checkOver(float dt){
     }
 }
 
-void GameScene::checkAction(ACTION_TYPE action){
-    
+bool GameScene::checkAction(ACTION_TYPE action){
+    GAME_TYPE type = GameController::getInstance()->getType();
+
+    switch (action) {
+        case ACTION_BLOCK_MOVE:
+            switch (type) {
+                case GAME_TYPE_CLASSICS:
+                    if (_canTabBlockCount >= GameController::getInstance()->getTargetCount()) {
+                        return true;
+                    }
+                    break;
+                    
+                default:
+                    break;
+            }
+            break;
+            
+        default:
+            break;
+    }
+    return false;
 }
 
 void GameScene::resetOneRowWithPos(const VECTOR_BLOCK& row,bool isMovePos){
@@ -368,6 +454,8 @@ void GameScene::addBlock(){
         _blocks.push_back(row);
         
     }
+    _canTabBlockCount = _mapSize.height+BUFF_COUNT;
+    
     for (int j = 0 ; j < _mapSize.width; j++) {
         BlockSprite* block = BlockSprite::createWithColor(true,_bgColor,_blockSize);
         Vec2 pos(Vec2(j*_blockSize.width,0));
@@ -420,15 +508,46 @@ Color4F GameScene::randomBrightColor(){
     }
 }
 
-void GameScene::gameOver(){
+void GameScene::gameOver(GAME_RESULT result){
     
     GameController::getInstance()->gameOver();
-
+    showGameOverUI(result);
     unscheduleUpdate();
 }
 
+void GameScene::showGameOverUI(GAME_RESULT result){
+    
+    auto layout = dynamic_cast<Layout*>(_gameOverUINode->getChildByName("Panel"));
+    switch (result) {
+        case GAME_SUCCESS:
+            if(!_gameOverUINode->getParent()){
+                this->addChild(_gameOverUINode);
+            }
+            _gameOverAction->play("game_success", true);
+            layout->setBackGroundColor(Color3B::GREEN);
+            //Color3B(237,79,79)
+            break;
+        case GAME_FAIL:
+            if(!_gameOverUINode->getParent()){
+                this->addChild(_gameOverUINode);
+            }
+            _gameOverAction->play("game_fail", true);
+            layout->setBackGroundColor(Color3B::RED);
+            //(97,236,79)
+            break;
+        case GAME_TAP_MISTAKE:
+            if(!_gameOverDialogUINode->getParent()){
+                this->addChild(_gameOverDialogUINode);
+            }
+            _gameOverDialogAction->play("game_fail", true);            
+            break;
+        default:
+            break;
+    }
+}
+
 //ui
-void GameScene::onDraw(const cocos2d::Mat4 &transform, uint32_t flags){
+//void GameScene::onDraw(const cocos2d::Mat4 &transform, uint32_t flags){
 //    this->setGLProgram(GLProgramCache::getInstance()->getGLProgram(GLProgram::SHADER_NAME_POSITION_COLOR));
 //    CC_NODE_DRAW_SETUP();
 //    Size winSize = Director::getInstance()->getWinSize();
@@ -478,9 +597,9 @@ void GameScene::onDraw(const cocos2d::Mat4 &transform, uint32_t flags){
 //    glDrawArrays(GL_LINES, 0, 12);
     
     
-}
-void GameScene::draw(cocos2d::Renderer *renderer, const cocos2d::Mat4 &transform, uint32_t flags){
+//}
+//void GameScene::draw(cocos2d::Renderer *renderer, const cocos2d::Mat4 &transform, uint32_t flags){
 //    _customCommand.init(getGlobalZOrder(),transform,flags);
 //    _customCommand.func = CC_CALLBACK_0(GameScene::onDraw, this,transform,flags);
 //    renderer->addCommand(&_customCommand);
-}
+//}

@@ -13,6 +13,18 @@
 #include "cocos2d.h"
 #include "json/document.h"
 class GameScene;
+typedef enum {
+    GAME_FAIL = 0,
+    GAME_SUCCESS = 1,
+    GAME_TAP_MISTAKE = 2
+    
+} GAME_RESULT;
+
+typedef enum {
+    MAIN_SCENE = 0,
+    GAME_SCENE = 1
+    
+} GAME_SCENE_TYPE;
 
 typedef enum{
     GAME_TYPE_NONE = 0,
@@ -84,9 +96,10 @@ public:
     static GameController* getInstance();
     
     virtual bool init();
-    void starGame(const std::string& gameId = "classic_25",bool isReplace = false);
+    void startGame(const std::string& gameId = "classic_25",bool isReplace = false);
     void setGame(const std::string& gameId = "classic_25");
     void gameOver();
+    void startAgain();
     bool isGameOver(){return _over;};
     bool getGameDataFrom(const std::string& gameId,rapidjson::Value& value,rapidjson::Value& group);
     bool getGameData(const std::string& gameId,rapidjson::Value& value);
@@ -100,6 +113,8 @@ public:
     float getTimeLimit(){return _timeLimit;};
     int getMapSize(){return _mapSize;};
     float getSpeed(){return _speed;};
+    
+    void toScene(GAME_SCENE_TYPE scene);
 
 private:
     bool _over;

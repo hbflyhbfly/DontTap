@@ -40,6 +40,7 @@ private:
     bool _isInUsing;
     bool _isCanTap;
     Color4F _blinkColor;
+
     float _blinkDur;
 };
 

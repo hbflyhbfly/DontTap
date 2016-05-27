@@ -52,7 +52,7 @@ bool MainScene::init(){
                 gameController->getGroupWithType(gameType, group);
                 rapidjson::Value& data = group[0];
                 
-                gameController->starGame(data["id"].GetString(),true);
+                gameController->startGame(data["id"].GetString(),true);
             }
             
         };
