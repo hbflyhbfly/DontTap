@@ -9,8 +9,10 @@
 #include "GameScene.hpp"
 #include "cocostudio/CocoStudio.h"
 #include "ui/UIButton.h"
+#include "ui/UIText.h"
 #include "time.h"
 #include "GameController.hpp"
+
 USING_NS_CC;
 USING_NS_CC_EXT;
 
@@ -24,7 +26,8 @@ _uiNode(nullptr),
 _gameTime(0.0f),
 _isReallyStart(false),
 _canTabBlockCount(0),
-_tabedBlockCount(0)
+_tabedBlockCount(0),
+_speedBuf(0)
 {
 }
 GameScene::~GameScene(){
@@ -43,11 +46,16 @@ bool GameScene::init(){
     _gameOverUINode = CSLoader::createNode("ui/GameOver.csb");
     _gameOverUINode->retain();
     _gameOverAction = CSLoader::getInstance()->createTimeline("ui/GameOver.csb");
+    _gameOverAction->setLastFrameCallFunc(CC_CALLBACK_0(GameScene::showDone, this));
+
     _gameOverUINode->runAction(_gameOverAction);
+
     //tap error ui
     _gameOverDialogUINode = CSLoader::createNode("ui/GameOverDialog.csb");
     _gameOverDialogUINode->retain();
     _gameOverDialogAction = CSLoader::getInstance()->createTimeline("ui/GameOverDialog.csb");
+    _gameOverAction->setLastFrameCallFunc(CC_CALLBACK_0(GameScene::showDone, this));
+
     _gameOverDialogUINode->runAction(_gameOverDialogAction);
 
 //    _gameOverAction->retain();
@@ -56,8 +64,7 @@ bool GameScene::init(){
     //progress
     _progress = dynamic_cast<LoadingBar*>(_uiNode->getChildByName("progress"));
     _targetLabel = dynamic_cast<TextBMFont*>(_uiNode->getChildByName("target_label"));
-    _progress->setPercent(0);
-    _targetLabel->setString(StringUtils::format("%.3f\"",0.000));
+
     //list
     auto listPanel = dynamic_cast<Layout*>(_uiNode->getChildByName("list_panel"));
     TableView* tableView = TableView::create(this,listPanel->getContentSize());
@@ -76,8 +83,8 @@ bool GameScene::init(){
     startAgainButton->addTouchEventListener(CC_CALLBACK_2(GameScene::touchEvent, this));
     
     
-    auto overButton = dynamic_cast<Button*>(_gameOverDialogUINode->getChildByName("over_btn"));
-    auto continueButton = dynamic_cast<Button*>(_gameOverDialogUINode->getChildByName("continue_btn"));
+    auto overButton = dynamic_cast<Button*>(_gameOverDialogUINode->getChildByName("Panel")->getChildByName("over_btn"));
+    auto continueButton = dynamic_cast<Button*>(_gameOverDialogUINode->getChildByName("Panel")->getChildByName("continue_btn"));
     overButton->addTouchEventListener(CC_CALLBACK_2(GameScene::touchEvent, this));
     continueButton->addTouchEventListener(CC_CALLBACK_2(GameScene::touchEvent, this));
 
@@ -95,7 +102,6 @@ bool GameScene::init(){
     
     _eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
     
-    setGameModel();
     
     return true;
 }
@@ -105,12 +111,15 @@ bool GameScene::init(){
 void GameScene::onEnter(){
     LayerColor::onEnter();
     this->addChild(_blockLayer);
-    _curOffset = _blockLayer->getPositionY();
+    this->addChild(_uiNode);
+    resetGame();
+    setGameModel();
+    updateTargetUI(0);
+
     addBlock();
     
-    this->addChild(_uiNode);
-    
     scheduleUpdate();
+    
 }
 
 void GameScene::showModelList(bool isShow){
@@ -134,6 +143,8 @@ void GameScene::touchEvent(Ref *pSender, Widget::TouchEventType type){
             
         case Widget::TouchEventType::ENDED:
         {
+            int n = (rand()%20)+1;
+            GameController::getInstance()->playSoundEffect(StringUtils::format("%d.mp3",n),true);
             if (name == "continue_btn") {
                 
             }else if(name == "over_btn"){
@@ -160,7 +171,7 @@ void GameScene::touchEvent(Ref *pSender, Widget::TouchEventType type){
 
 bool GameScene::onTouchBegan(Touch *touch, Event *unused_event){
     
-    if(GameController::getInstance()->isGameOver()) return false;
+    if(GameController::getInstance()->isGameOver() != GAME_NONE) return false;
     if (_startLabel->isVisible()) {
         _startLabel->setVisible(false);
     }
@@ -169,11 +180,12 @@ bool GameScene::onTouchBegan(Touch *touch, Event *unused_event){
     std::vector<BlockSprite*> row = _blocks.front();
     bool isHit = false;
     for (auto block:row) {
-        Rect rect(block->getPosition()+Vec2(0,_blockSize.height/6), _blockSize +Size(0,_blockSize.height/3));
+        Rect rect(block->getPosition()+Vec2(0,-_blockSize.height/3), _blockSize +Size(0,_blockSize.height/3));
         if (rect.containsPoint(loc)) {
             if(block->canTap()){
                 tap(block);
             }else{
+                GameController::getInstance()->playSoundEffect("error_piano.m4a", false);
                 block->blink();
                 gameOver(GAME_TAP_MISTAKE);
             }
@@ -271,13 +283,36 @@ ssize_t GameScene::numberOfCellsInTableView(TableView *table)
 void GameScene::update(float dt){
     if (_isReallyStart) {
         _gameTime += dt;
+    }else{
+        return;
     }
+    updateTargetUI(dt);
+    move(dt);
     checkPosition(dt);
+    
     checkOver(dt);
-    _targetLabel->setString(StringUtils::format("%.3f\"",_gameTime));
+    
+    
     
 }
 
+void GameScene::updateTargetUI(float dt){
+    if(GameController::getInstance()->getType() == GAME_TYPE_ZEN){
+        _progress->setPercent((float)(GameController::getInstance()->getTimeLimit()-_gameTime)/(float)GameController::getInstance()->getTimeLimit()*100);
+        _targetLabel->setString(StringUtils::format("%d",_tabedBlockCount));
+
+    }else if(GameController::getInstance()->getType() == GAME_TYPE_CLASSICS){
+        _progress->setPercent((float)_tabedBlockCount/(float)GameController::getInstance()->getTargetCount()*100);
+        _targetLabel->setString(StringUtils::format("%.3f\"",_gameTime));
+    }else if(GameController::getInstance()->getType() == GAME_TYPE_ARCADE){
+        _targetLabel->setString(StringUtils::format("%d",_tabedBlockCount));
+    }else if(GameController::getInstance()->getType() == GAME_TYPE_RUSH){
+        _targetLabel->setString(StringUtils::format("%.3f/s",_tabedBlockCount/_gameTime));
+    }else if(GameController::getInstance()->getType() == GAME_TYPE_RELAY){
+        _progress->setPercent((float)_tabedBlockCount/(float)GameController::getInstance()->getTargetCount()*100);
+        _targetLabel->setString(StringUtils::format("%.3f\"",GameController::getInstance()->getTimeLimit()-_gameTime));
+    }
+}
 void GameScene::checkPopRow(float dt){
     
 }
@@ -298,6 +333,7 @@ void GameScene::setGameModel(){
 void GameScene::resetGame(){
     unscheduleUpdate();
     _isReallyStart = false;
+    _speedBuf = 0;
     _gameTime = 0.0f;
     _tabedBlockCount = 0;
     _progress->setPercent(0);
@@ -312,6 +348,9 @@ void GameScene::resetGame(){
     _gameOverDialogUINode->removeFromParentAndCleanup(false);
     showModelList(true);
     _startLabel->setVisible(true);
+    
+    
+    updateTargetUI(0);
 }
 
 void GameScene::restartGame(){
@@ -322,22 +361,49 @@ void GameScene::restartGame(){
 }
 void GameScene::tap(BlockSprite* block){
     if(!_isReallyStart) _isReallyStart = true;
-    block->setBlockColor(Color4F::GRAY);
-    move(-_blockSize.height);
+    block->beTaped(Color4F::GRAY);
     _tabedBlockCount ++;
-    _progress->setPercent((float)_tabedBlockCount/(float)GameController::getInstance()->getTargetCount()*100);
+    if (GameController::getInstance()->getType() == GAME_TYPE_RELAY) {
+        if (_tabedBlockCount >= GameController::getInstance()->getTargetCount()&&GameController::getInstance()->getTimeLimit()-_gameTime >= 0) {
+            _gameTime -= GameController::getInstance()->getTimeLimit();
+            _tabedBlockCount = 0;
+        }
+    }
+    moveForTap(-_blockSize.height);
+    GameController::getInstance()->playPianoSount();
+
 }
 
 void GameScene::checkPosition(float dt){
     if(checkAction(ACTION_BLOCK_MOVE)) return;
+
+    std::vector<BlockSprite*> row_u = _blocks.front();
+    for (int i = 0;i<row_u.size();i++) {
+        auto block = row_u[i];
+        if (!block->isTaped() && block->canTap()) {
+            Vec2 p = _blockLayer->convertToWorldSpace(block->getPosition());
+            if (p.y <= -_blockSize.height) {
+                gameOver(GAME_OVER);
+                GameController::getInstance()->playSoundEffect("error_piano.m4a", false);
+                moveForBack();
+                return;
+            }
+        }
+    }
+    
+    
     
     if (_unUsingBlocks.size() == 0) {
         return;
     }
+    
     std::vector<BlockSprite*> row = _unUsingBlocks.back();
+
     auto firstBlock = row[0];
+
     Vec2 p = _blockLayer->convertToWorldSpace(firstBlock->getPosition());
     if (p.y <= -_blockSize.height) {
+        
         resetOneRowWithPos(row,true);
         _unUsingBlocks.pop_back();
         _blocks.push_back(row);
@@ -358,10 +424,11 @@ void GameScene::checkOver(float dt){
             }
             break;
         case GAME_TYPE_ARCADE:
+            
             break;
         case GAME_TYPE_ZEN:
             if (GameController::getInstance()->getTimeLimit() <= _gameTime) {
-                gameOver(GAME_SUCCESS);
+                gameOver(GAME_OVER);
             }
             
             break;
@@ -369,7 +436,9 @@ void GameScene::checkOver(float dt){
             
             break;
         case GAME_TYPE_RELAY:
-            
+            if (GameController::getInstance()->getTimeLimit() <= _gameTime ) {
+                gameOver(GAME_OVER);
+            }
             break;
         case GAME_TYPE_ARCADE_2:
             
@@ -403,7 +472,8 @@ bool GameScene::checkAction(ACTION_TYPE action){
 }
 
 void GameScene::resetOneRowWithPos(const VECTOR_BLOCK& row,bool isMovePos){
-    int canTapIndex = rand()%(int)_mapSize.width;
+    
+    int canTapIndex = getNewTapIndex(false);
     
     for (int i = 0;i<row.size();i++) {
         auto block = row[i];
@@ -429,11 +499,12 @@ void GameScene::addBlock(){
     srand( (int)time( NULL ));
 
     std::vector<int> colors;
+
     for (int i = 1; i<=_mapSize.height+BUFF_COUNT; i++) {
         
         std::vector<BlockSprite*> row;
-        int canTapIndex = rand()%(int)_mapSize.width;
-        
+        int canTapIndex = getNewTapIndex(false);
+
         for (int j = 0 ; j < _mapSize.width; j++) {
             BlockSprite* block;
             if (canTapIndex == j) {
@@ -465,6 +536,23 @@ void GameScene::addBlock(){
     }
 }
 
+int GameScene::getNewTapIndex(bool isFirst){
+    if(!isFirst && GameController::getInstance()->getSubType() == GAME_SUBTYPE_Plus){
+        std::vector<int> a;
+        for (int i = 0 ; i < _mapSize.width; i++) {
+            if (_lastCanTapIndex != i) {
+                a.push_back(i);
+            }
+        }
+        int n = rand()%(int)a.size();
+        _lastCanTapIndex = a[n];
+    }else{
+        _lastCanTapIndex = rand()%(int)_mapSize.width;
+
+    }
+    
+    return _lastCanTapIndex;
+}
 void GameScene::change(){
     LIST_VECTOR_BLOCK::iterator it;
     int i = 0;
@@ -482,10 +570,28 @@ GameScene* GameScene::createScene(){
     return layer;
 }
 
-void GameScene::move(float offset){
-    _curOffset += offset;
+void GameScene::moveForTap(float offset){
+    if (GameController::getInstance()->getType() == GAME_TYPE_CLASSICS ||
+        GameController::getInstance()->getType() == GAME_TYPE_ZEN ||
+        GameController::getInstance()->getType() == GAME_TYPE_RELAY) {
+        _curOffset += offset;
+        auto action = MoveTo::create(.12f, Vec2(_blockLayer->getPositionX(),_curOffset));
+        _blockLayer->runAction(action);
+    }
+}
+
+void GameScene::moveForBack(){
+    _curOffset -= _blockSize.height;
     auto action = MoveTo::create(.12f, Vec2(_blockLayer->getPositionX(),_curOffset));
-    _blockLayer->runAction(action);
+    _blockLayer->runAction(EaseIn::create(action, 1.0f));
+}
+void GameScene::move(float dt){
+    if(GameController::getInstance()->getType() == GAME_TYPE_ARCADE ||
+       GameController::getInstance()->getType() == GAME_TYPE_RUSH){
+        _blockLayer->setPositionY(_blockLayer->getPositionY() - GameController::getInstance()->getSpeed()*20-_speedBuf);
+        
+        _speedBuf+=0.01f*GameController::getInstance()->getSpeed();
+    }
 }
 
 void GameScene::setBackgroung(){
@@ -511,7 +617,7 @@ Color4F GameScene::randomBrightColor(){
 
 void GameScene::gameOver(GAME_RESULT result){
     
-    GameController::getInstance()->gameOver();
+    GameController::getInstance()->gameOver(result);
     showGameOverUI(result);
     unscheduleUpdate();
 }
@@ -524,7 +630,7 @@ void GameScene::showGameOverUI(GAME_RESULT result){
             if(!_gameOverUINode->getParent()){
                 this->addChild(_gameOverUINode);
             }
-            _gameOverAction->play("game_success", true);
+            _gameOverAction->play("show", false);
             layout->setBackGroundColor(Color3B(119,175,91));
             //Color3B(237,79,79)
             break;
@@ -532,21 +638,137 @@ void GameScene::showGameOverUI(GAME_RESULT result){
             if(!_gameOverUINode->getParent()){
                 this->addChild(_gameOverUINode);
             }
-            _gameOverAction->play("game_fail", true);
+            _gameOverAction->play("show", false);
             layout->setBackGroundColor(Color3B(207,81,80));
             //(97,236,79)
+            break;
+        case GAME_OVER:
+            if(!_gameOverUINode->getParent()){
+                this->addChild(_gameOverUINode);
+            }
+            _gameOverAction->play("show", false);
+            layout->setBackGroundColor(Color3B::BLACK);
             break;
         case GAME_TAP_MISTAKE:
             if(!_gameOverDialogUINode->getParent()){
                 this->addChild(_gameOverDialogUINode);
             }
-            _gameOverDialogAction->play("game_fail", true);            
+            _gameOverDialogAction->play("show", false);
             break;
+
+        default:
+            break;
+    }
+    updateResultUI();
+    updateDialogUI();
+}
+void GameScene::showDone(){
+    GAME_RESULT result = GameController::getInstance()->isGameOver();
+    switch (result) {
+        case GAME_SUCCESS:
+            if(!_gameOverUINode->getParent()){
+                this->addChild(_gameOverUINode);
+            }
+            _gameOverAction->play("game_success", true);
+            break;
+        case GAME_FAIL:
+            if(!_gameOverUINode->getParent()){
+                this->addChild(_gameOverUINode);
+            }
+            _gameOverAction->play("game_fail", true);
+
+            break;
+        case GAME_OVER:
+            if(!_gameOverUINode->getParent()){
+                this->addChild(_gameOverUINode);
+            }
+            _gameOverAction->play("game_success", true);
+            break;
+        case GAME_TAP_MISTAKE:
+            if(!_gameOverDialogUINode->getParent()){
+                this->addChild(_gameOverDialogUINode);
+            }
+            _gameOverDialogAction->play("game_fail", true);
+            
+            break;
+
         default:
             break;
     }
 }
+void GameScene::updateResultUI(){
+    auto token = dynamic_cast<cocos2d::ui::Text*>(_gameOverUINode->getChildByName("Panel")->getChildByName("token_text"));
+    auto typeText = dynamic_cast<cocos2d::ui::Text*>(_gameOverUINode->getChildByName("Panel")->getChildByName("game_type"));
+    auto subTypeText = dynamic_cast<cocos2d::ui::Text*>(_gameOverUINode->getChildByName("Panel")->getChildByName("game_subtype"));
+    auto resultText = dynamic_cast<cocos2d::ui::Text*>(_gameOverUINode->getChildByName("Panel")->getChildByName("result"));
+    auto scoreText = dynamic_cast<TextBMFont*>(_gameOverUINode->getChildByName("Panel")->getChildByName("result_score"));
+    GAME_TYPE type = GameController::getInstance()->getType();
+    GAME_SUBTYPE subType = GameController::getInstance()->getSubType();
+    float result = GameController::getInstance()->getUserResult(type, subType);
+    
+    int count = GameController::getInstance()->getUserData("token", DATA_INT).GetInt();
+    token->setString(StringUtils::format("%d",count));
+    
+    typeText->setString(TYPE_STR_VEC[type]);
+    subTypeText->setString(SUBTYPE_STR_VEC[subType]);
+    if(type == GAME_TYPE_ZEN){
+        if(_tabedBlockCount>result) result = _tabedBlockCount;
+        scoreText->setString(StringUtils::format("%d",(int)result));
+        
+    }else if(type == GAME_TYPE_CLASSICS){
+        if(_gameTime>result) result = _gameTime;
+        
+        scoreText->setString(StringUtils::format("%.3f\"",result));
+    }else if(type == GAME_TYPE_ARCADE){
+        if(_tabedBlockCount>result) result = _tabedBlockCount;
+        
+        scoreText->setString(StringUtils::format("%d",(int)result));
+    }else if(type == GAME_TYPE_RUSH){
+        if(_tabedBlockCount/_gameTime>result) result = _tabedBlockCount/_gameTime;
+        
+        scoreText->setString(StringUtils::format("%.3f/s",result));
+    }else if(type == GAME_TYPE_RELAY){
+        if(GameController::getInstance()->getTimeLimit()-_gameTime>result) result = GameController::getInstance()->getTimeLimit()-_gameTime;
+        
+        scoreText->setString(StringUtils::format("%.3f\"",result));
+        
+    }
 
+
+}
+void GameScene::updateDialogUI(){
+    
+    auto resultText = dynamic_cast<Label*>(_gameOverDialogUINode->getChildByName("Panel")->getChildByName("result_text"));
+    auto tipsText = dynamic_cast<Label*>(_gameOverDialogUINode->getChildByName("Panel")->getChildByName("tips"));
+    
+    auto scoreText = dynamic_cast<TextBMFont*>(_gameOverDialogUINode->getChildByName("Panel")->getChildByName("score_text"));
+    GAME_TYPE type = GameController::getInstance()->getType();
+    GAME_SUBTYPE subType = GameController::getInstance()->getSubType();
+    float result = GameController::getInstance()->getUserResult(type, subType);
+    if(type == GAME_TYPE_ZEN){
+        if(_tabedBlockCount>result) result = _tabedBlockCount;
+        scoreText->setString(StringUtils::format("%d",(int)result));
+        
+    }else if(type == GAME_TYPE_CLASSICS){
+        if(_gameTime>result) result = _gameTime;
+
+        scoreText->setString(StringUtils::format("%.3f\"",result));
+    }else if(type == GAME_TYPE_ARCADE){
+        if(_tabedBlockCount>result) result = _tabedBlockCount;
+
+        scoreText->setString(StringUtils::format("%d",(int)result));
+    }else if(type == GAME_TYPE_RUSH){
+        if(_tabedBlockCount/_gameTime>result) result = _tabedBlockCount/_gameTime;
+
+        scoreText->setString(StringUtils::format("%.3f/s",result));
+    }else if(type == GAME_TYPE_RELAY){
+        if(GameController::getInstance()->getTimeLimit()-_gameTime>result) result = GameController::getInstance()->getTimeLimit()-_gameTime;
+
+        scoreText->setString(StringUtils::format("%.3f\"",result));
+        
+    }
+
+}
 //ui
 //void GameScene::onDraw(const cocos2d::Mat4 &transform, uint32_t flags){
 //    this->setGLProgram(GLProgramCache::getInstance()->getGLProgram(GLProgram::SHADER_NAME_POSITION_COLOR));

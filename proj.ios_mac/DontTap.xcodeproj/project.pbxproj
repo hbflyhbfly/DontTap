@@ -20,6 +20,7 @@
 		2BA8CB511CD5074800BC3140 /* GameScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2BA8CB4F1CD5074800BC3140 /* GameScene.cpp */; };
 		2BA8CB5A1CD5E2F800BC3140 /* ui in Resources */ = {isa = PBXBuildFile; fileRef = 2BA8CB591CD5E2F800BC3140 /* ui */; };
 		2BA8CB5D1CD5F75700BC3140 /* BlockSprite.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2BA8CB5B1CD5F75700BC3140 /* BlockSprite.cpp */; };
+		2BB8C28C1CFC289E0048B720 /* hy_function.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2BB8C28A1CFC289E0048B720 /* hy_function.cpp */; };
 		2BEBF02E1CDE121E000FDC36 /* GameController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2BEBF02C1CDE121E000FDC36 /* GameController.cpp */; };
 		3EACC98F19EE6D4300EB3C5E /* res in Resources */ = {isa = PBXBuildFile; fileRef = 3EACC98E19EE6D4300EB3C5E /* res */; };
 		3EACC99019EE6D4300EB3C5E /* res in Resources */ = {isa = PBXBuildFile; fileRef = 3EACC98E19EE6D4300EB3C5E /* res */; };
@@ -119,6 +120,8 @@
 		2BA8CB591CD5E2F800BC3140 /* ui */ = {isa = PBXFileReference; lastKnownFileType = folder; path = ui; sourceTree = "<group>"; };
 		2BA8CB5B1CD5F75700BC3140 /* BlockSprite.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BlockSprite.cpp; sourceTree = "<group>"; };
 		2BA8CB5C1CD5F75700BC3140 /* BlockSprite.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = BlockSprite.hpp; sourceTree = "<group>"; };
+		2BB8C28A1CFC289E0048B720 /* hy_function.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = hy_function.cpp; sourceTree = "<group>"; };
+		2BB8C28B1CFC289E0048B720 /* hy_function.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hy_function.h; sourceTree = "<group>"; };
 		2BEBF02C1CDE121E000FDC36 /* GameController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GameController.cpp; sourceTree = "<group>"; };
 		2BEBF02D1CDE121E000FDC36 /* GameController.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = GameController.hpp; sourceTree = "<group>"; };
 		3EACC98E19EE6D4300EB3C5E /* res */ = {isa = PBXFileReference; lastKnownFileType = folder; path = res; sourceTree = "<group>"; };
@@ -304,6 +307,8 @@
 		46880B8319C43A87006E1F66 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				2BB8C28A1CFC289E0048B720 /* hy_function.cpp */,
+				2BB8C28B1CFC289E0048B720 /* hy_function.h */,
 				46880B8419C43A87006E1F66 /* AppDelegate.cpp */,
 				46880B8519C43A87006E1F66 /* AppDelegate.h */,
 				2BA8CB4C1CD500E900BC3140 /* MainScene.cpp */,
@@ -504,6 +509,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2BB8C28C1CFC289E0048B720 /* hy_function.cpp in Sources */,
 				2BA8CB5D1CD5F75700BC3140 /* BlockSprite.cpp in Sources */,
 				2BEBF02E1CDE121E000FDC36 /* GameController.cpp in Sources */,
 				46880B8819C43A87006E1F66 /* AppDelegate.cpp in Sources */,
@@ -570,7 +576,8 @@
 					"$(_COCOS_LIB_IOS_BEGIN)",
 					"$(_COCOS_LIB_IOS_END)",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.tencent.tmgp.popstarq.tester;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tencent.popstarq;
+				PROVISIONING_PROFILE = "34948c84-c5ea-48a7-a293-f5b2e24fa773";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "$(_COCOS_HEADER_IOS_BEGIN) $(_COCOS_HEADER_IOS_END)";
@@ -606,7 +613,8 @@
 					"$(_COCOS_LIB_IOS_BEGIN)",
 					"$(_COCOS_LIB_IOS_END)",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.tencent.tmgp.popstarq.tester;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tencent.popstarq;
+				PROVISIONING_PROFILE = "34948c84-c5ea-48a7-a293-f5b2e24fa773";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "$(_COCOS_HEADER_IOS_BEGIN) $(_COCOS_HEADER_IOS_END)";

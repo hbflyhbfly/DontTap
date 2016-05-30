@@ -8,6 +8,7 @@
 #include "MainScene.hpp"
 #include "cocostudio/CocoStudio.h"
 #include "ui/UIButton.h"
+#include "ui/UIText.h"
 #include "GameScene.hpp"
 #include "GameController.hpp"
 USING_NS_CC;
@@ -54,7 +55,8 @@ bool MainScene::init(){
                 
                 gameController->startGame(data["id"].GetString(),true);
             }
-            
+            int n = (rand()%20)+1;
+            GameController::getInstance()->playSoundEffect(StringUtils::format("%d.mp3",n),true);
         };
         startButton->addClickEventListener(callback);
 
@@ -71,7 +73,6 @@ Scene* MainScene::createScene(){
 
 void MainScene::onEnter(){
     Layer::onEnter();
-    
 //    Sprite* s =Sprite::create("res/button_startCN1.png");
 //    s->setPosition(300,500);
 //    
@@ -80,4 +81,13 @@ void MainScene::onEnter(){
 //    this->addChild(s);
     this->addChild(_uiNode);
     
+    updateUI();
+
+}
+
+void MainScene::updateUI(){
+    auto n = _uiNode->getChildByName("Panel_5");
+    auto token = dynamic_cast<Text*>(n->getChildByName("token_text"));
+    int count = GameController::getInstance()->getUserData("token", DATA_INT).GetInt();
+    token->setString(StringUtils::format("%d",count));
 }

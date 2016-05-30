@@ -61,22 +61,30 @@ public:
 private:
     void touchEvent(Ref *pSender, cocos2d::ui::Widget::TouchEventType type);
     void addBlock();
+    int getNewTapIndex(bool isFirst);
     void setBackgroung();
     void checkPopRow(float dt = .0f);
     void checkPosition(float dt = .0f);
     void checkOver(float dt = .0f);
     bool checkAction(ACTION_TYPE action);
+    void updateTargetUI(float dt);
     cocos2d::Color4F randomBrightColor();
     Vec2 tileCoordForPosition(Vec2 pos);
     void resetOneRowWithPos(const VECTOR_BLOCK& row,bool isMovePos);
     void update(float dt) override;
-    void move(float offset);
+    void move(float dt);
+    void moveForTap(float offset);
+    void moveForBack();
+    void moveBack();
     void tap(BlockSprite* block);
     void change();
     void setGameModel();
     void resetGame();
     void setTableCell(ssize_t idx,TableViewCell& cell,bool isAdd = false);
     void showModelList(bool isShow);
+    void showDone();
+    void updateResultUI();
+    void updateDialogUI();
 protected:
 //    void onDraw(const cocos2d::Mat4 &transform, uint32_t flags);
     
@@ -92,13 +100,14 @@ private:
     cocos2d::ui::TextBMFont* _targetLabel;
     cocos2d::Layer* _blockLayer;
 
+    int _lastCanTapIndex;
     LIST_VECTOR_BLOCK _blocks;
     LIST_VECTOR_BLOCK _unUsingBlocks;
     float _curOffset;//layer's offset
     float _gameTime;//current time
     int _tabedBlockCount;//taped block
     int _canTabBlockCount;//block'count can be taped
-    
+    float _speedBuf;
     bool _isReallyStart;//had first touch
     
     //ui node

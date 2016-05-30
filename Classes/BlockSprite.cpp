@@ -11,7 +11,8 @@
 BlockSprite::BlockSprite():
 _isInUsing(false),
 _color(Color4F::WHITE),
-_blinkColor(Color4F::RED){
+_blinkColor(Color4F::RED),
+_beTaped(false){
     
 }
 
@@ -46,6 +47,12 @@ void BlockSprite::reset(bool canTap,bool inUsing,Color4F color){
     _color = color;
     _isCanTap = canTap;
     _isInUsing = inUsing;
+    _beTaped = false;
+}
+
+void BlockSprite::beTaped(Color4F color){
+    setBlockColor(color);
+    _beTaped = true;
 }
 
 void BlockSprite::blink(){

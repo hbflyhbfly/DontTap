@@ -12,13 +12,22 @@
 #include <stdio.h>
 #include "cocos2d.h"
 #include "json/document.h"
+#include "CCUserDefault.h"
 class GameScene;
 typedef enum {
+    GAME_NONE = -1,
     GAME_FAIL = 0,
     GAME_SUCCESS = 1,
-    GAME_TAP_MISTAKE = 2
+    GAME_TAP_MISTAKE = 2,
+    GAME_OVER = 3
     
 } GAME_RESULT;
+
+typedef enum {
+    DATA_INT = -1,
+    DATA_STRING = 0,
+    DATA_DOUBLE = 1
+} DATA_TYPE;
 
 typedef enum {
     MAIN_SCENE = 0,
@@ -34,7 +43,7 @@ typedef enum{
     GAME_TYPE_RUSH = 4,
     GAME_TYPE_RELAY = 5,
     GAME_TYPE_ARCADE_2 = 6,
-    GAME_TYPE_ARCADE_3 = 7
+    GAME_TYPE_SHUFFLE = 7
 
 } GAME_TYPE;
 typedef enum{
@@ -64,7 +73,7 @@ static std::vector<std::string> TYPE_STR_VEC{
     "Arcade",
     "Zen",
     "Rush",
-    "Zen",
+    "Relay",
     "Arcade-2",
     "Shuffle"
 };
@@ -78,7 +87,7 @@ static std::vector<std::string> SUBTYPE_STR_VEC{
     "Normal",
     "Faster",
     "time",
-    "time",
+    "add_time",
     "Bomb",
     "Double",
     "Bilayer",
@@ -98,13 +107,14 @@ public:
     virtual bool init();
     void startGame(const std::string& gameId = "classic_25",bool isReplace = false);
     void setGame(const std::string& gameId = "classic_25");
-    void gameOver();
+    void gameOver(GAME_RESULT result);
     void startAgain();
-    bool isGameOver(){return _over;};
+    GAME_RESULT isGameOver(){return _over;};
     bool getGameDataFrom(const std::string& gameId,rapidjson::Value& value,rapidjson::Value& group);
     bool getGameData(const std::string& gameId,rapidjson::Value& value);
     bool getGroupWithType(GAME_TYPE gameType,rapidjson::Value& group);
     bool getCurrentGroup(rapidjson::Value& group);
+    const std::vector<int> getMusicVec();
     const std::string& getGameId(){return _gameId;};
     GAME_SUBTYPE getSubType(){return _gameSubType;};
     GAME_TYPE getType(){return _gameType;};
@@ -115,16 +125,25 @@ public:
     float getSpeed(){return _speed;};
     
     void toScene(GAME_SCENE_TYPE scene);
-
+    
+    void addToken(int amount);
+    void playSoundEffect(const std::string& sound,bool isPiano);
+    void playPianoSount();
+    float getUserResult(GAME_TYPE tyep,GAME_SUBTYPE subtype);
+    void setUserResult(GAME_TYPE type,GAME_SUBTYPE subtype,float result);
+    void setUserData(const std::string& key,const rapidjson::Value& value);
+    rapidjson::Value getUserData(const std::string& key,DATA_TYPE type);
 private:
-    bool _over;
+    GAME_RESULT _over;
     
     int _targetCount;
     float _timeLimit;
     int _mapSize;
     float _speed;
-    
+    std::vector<int> _curMusicVec;
+    int _curMusicIndex;
     rapidjson::Document _doc;
+    rapidjson::Document _musicDoc;
     std::string _gameId;
     GAME_TYPE _gameType;
     GAME_SUBTYPE _gameSubType;

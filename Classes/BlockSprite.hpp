@@ -26,10 +26,13 @@ public:
     bool inUsing(){return _isInUsing;};
     void setUsing(bool inUsing){_isInUsing = inUsing;};
     void setCanTap(bool canTap){_isCanTap = canTap;};
-    void setBlockColor(Color4F color){_color = color;};
+    void beTaped(Color4F color);
+    bool isTaped(){return _beTaped;};
     void reset(bool canTap,bool inUsing,Color4F color);
     void blink();
     void playAction();
+private:
+    void setBlockColor(Color4F color){_color = color;};
 protected:
     void onDraw(const cocos2d::Mat4 &transform, uint32_t flags);
 
@@ -40,7 +43,7 @@ private:
     bool _isInUsing;
     bool _isCanTap;
     Color4F _blinkColor;
-
+    bool _beTaped;
     float _blinkDur;
 };
 
