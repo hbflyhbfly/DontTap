@@ -47,6 +47,7 @@ bool MainScene::init(){
                 
             }else if(tag == 9){//songs
                 
+            }else if(tag == 7){
             }else{
                 GAME_TYPE gameType = (GAME_TYPE)tag;
                 rapidjson::Value group(rapidjson::kArrayType);
