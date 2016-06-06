@@ -269,7 +269,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "237"
             endingLineNumber = "237"
-            landmarkName = "GameScene::tableCellAtIndex(TableView *table, ssize_t idx)"
+            landmarkName = "GameScene::tableCellTouched(TableView* table, TableViewCell* cell)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -461,7 +461,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "285"
             endingLineNumber = "285"
-            landmarkName = "GameScene::update(float dt)"
+            landmarkName = "GameScene::setTableCell(ssize_t idx,TableViewCell&amp; cell,bool isAdd)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -509,7 +509,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "554"
             endingLineNumber = "554"
-            landmarkName = "GameScene::getNewTapIndex(bool isFirst)"
+            landmarkName = "GameScene::addBlock()"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -525,7 +525,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "548"
             endingLineNumber = "548"
-            landmarkName = "GameScene::getNewTapIndex(bool isFirst)"
+            landmarkName = "GameScene::addBlock()"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -589,7 +589,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "290"
             endingLineNumber = "290"
-            landmarkName = "GameScene::update(float dt)"
+            landmarkName = "GameScene::setTableCell(ssize_t idx,TableViewCell&amp; cell,bool isAdd)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -605,7 +605,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "594"
             endingLineNumber = "594"
-            landmarkName = "GameScene::move(float dt)"
+            landmarkName = "GameScene::change()"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -669,7 +669,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "622"
             endingLineNumber = "622"
-            landmarkName = "GameScene::gameOver(GAME_RESULT result)"
+            landmarkName = "GameScene::moveForBack()"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -685,7 +685,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "628"
             endingLineNumber = "628"
-            landmarkName = "GameScene::showGameOverUI(GAME_RESULT result)"
+            landmarkName = "GameScene::move(float dt)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -701,7 +701,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "667"
             endingLineNumber = "667"
-            landmarkName = "GameScene::showDone()"
+            landmarkName = "GameScene::gameOver(GAME_RESULT result)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -717,7 +717,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "701"
             endingLineNumber = "701"
-            landmarkName = "GameScene::updateResultUI()"
+            landmarkName = "GameScene::showGameOverUI(GAME_RESULT result)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -764,9 +764,7 @@
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "300"
-            endingLineNumber = "300"
-            landmarkName = "GameScene::updateTargetUI(float dt)"
-            landmarkType = "5">
+            endingLineNumber = "300">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
