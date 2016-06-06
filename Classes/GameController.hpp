@@ -133,6 +133,7 @@ public:
     void setUserResult(GAME_TYPE type,GAME_SUBTYPE subtype,float result);
     void setUserData(const std::string& key,const rapidjson::Value& value);
     rapidjson::Value getUserData(const std::string& key,DATA_TYPE type);
+    std::string getRandomGame();
 private:
     GAME_RESULT _over;
     

@@ -12,7 +12,9 @@ BlockSprite::BlockSprite():
 _isInUsing(false),
 _color(Color4F::WHITE),
 _blinkColor(Color4F::RED),
-_beTaped(false){
+_beTaped(false),
+_tapCount(1),
+_beTapedCount(0){
     
 }
 
@@ -28,6 +30,8 @@ bool BlockSprite::initWithColor(bool canTap,cocos2d::Color4F color,Size size){
     _size = size;
     _isCanTap = canTap;
     _tattoo = Sprite::create();
+    _tattoo->setPosition(Vec2(size.width/2,size.height/2));
+    addChild(_tattoo);
     return true;
 }
 
@@ -48,6 +52,7 @@ void BlockSprite::reset(bool canTap,bool inUsing,Color4F color){
     _isCanTap = canTap;
     _isInUsing = inUsing;
     _beTaped = false;
+    _beTapedCount = 0;
 }
 
 void BlockSprite::reset(bool canTap, bool inUsing, cocos2d::Color4F color,const std::string& tatto,int TapCount){
@@ -62,18 +67,26 @@ void BlockSprite::reset(bool canTap, bool inUsing, cocos2d::Color4F color,const 
 
 void BlockSprite::reset(bool canTap, bool inUsing, cocos2d::Color4F color,int tapCount){
     reset(canTap,_isInUsing,color);
+    _tapCount = tapCount;
 }
 
-void BlockSprite::beTaped(Color4F color){
-    setBlockColor(color);
-    if(_beTapedCount != _tapCount){
+void BlockSprite::beTaped(bool isError,Color4F color){
+    if (isError) {
+        _blinkDur = 1.0f;
+        setBlockColor(_blinkColor);
+    }else{
+        setBlockColor(color);
+    }
+    if(_beTapedCount < _tapCount){
         _beTapedCount++;
+    }
+    if (_beTapedCount == _tapCount) {
         _beTaped = true;
+        
     }
 }
 
 void BlockSprite::blink(){
-    _blinkDur = 1.0f;
     _color = _blinkColor;
 }
 void BlockSprite::onDraw(const cocos2d::Mat4 &transform, uint32_t flags){

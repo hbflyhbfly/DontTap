@@ -26,7 +26,7 @@ public:
     bool inUsing(){return _isInUsing;};
     void setUsing(bool inUsing){_isInUsing = inUsing;};
     void setCanTap(bool canTap){_isCanTap = canTap;};
-    void beTaped(Color4F color);
+    void beTaped(bool isError,Color4F color);
     bool isTaped(){return _beTaped;};
     void reset(bool canTap,bool inUsing,Color4F color);
     void reset(bool canTap, bool inUsing, cocos2d::Color4F color,const std::string& tatto,int tapCount);

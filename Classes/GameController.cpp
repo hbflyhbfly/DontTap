@@ -137,7 +137,7 @@ void GameController::setGame(const std::string& gameId){
             _timeLimit = 10;
             break;
         case GAME_TYPE_ARCADE_2:
-            
+            _speed = 1;
             break;
         default:
             break;
@@ -217,6 +217,16 @@ bool GameController::getGroupWithType(GAME_TYPE gameType,rapidjson::Value& group
     }
     
     return true;
+}
+
+std::string GameController::getRandomGame(){
+    if (_doc.IsArray()) {
+        int n = hy_function::instance()->randomFrom(0,_doc.Size()-1);
+        rapidjson::Value& arrayValue = _doc[n];
+        std::string s = arrayValue["id"].GetString();
+        return s;
+    }
+    return  "";
 }
 
 void GameController::gameOver(GAME_RESULT result){
