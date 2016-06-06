@@ -105,6 +105,12 @@ bool hy_function::splite_sint_to_vec( const char* in_str,std::vector< int > &out
 	}
 	return true;
 }
+
+int hy_function::randomFrom(int n,int m){
+    int x = (rand()%(m-n+1))+1;
+    return x;
+}
+
 ////////////////////////////////////////////////////////////
 //hy_function::get_str_pos
 ////////////////////////////////////////////////////////////

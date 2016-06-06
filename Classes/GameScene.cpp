@@ -12,7 +12,7 @@
 #include "ui/UIText.h"
 #include "time.h"
 #include "GameController.hpp"
-
+#include "hy_function.h"
 USING_NS_CC;
 USING_NS_CC_EXT;
 
@@ -27,9 +27,12 @@ _gameTime(0.0f),
 _isReallyStart(false),
 _canTabBlockCount(0),
 _tabedBlockCount(0),
-_speedBuf(0)
-{
+_speedBuf(0),
+_specialIndex(0),
+_timeBlock(0){
+    
 }
+
 GameScene::~GameScene(){
     _groupData.Clear();
     _gameOverUINode->release();
@@ -198,6 +201,21 @@ bool GameScene::onTouchBegan(Touch *touch, Event *unused_event){
     if (isHit) {
         _blocks.pop_front();
         _unUsingBlocks.push_front(row);
+        if (GameController::getInstance()->getSubType() == GAME_SUBTYPE_Mist) {
+            VECTOR_BLOCK newRow = _blocks.front();
+
+            int canTapIndex = getNewTapIndex(false);
+
+            for (int i = 0;i<row.size();i++) {
+                auto block = row[i];
+                if(canTapIndex == i){
+                    block->reset(true, true, _blockColor,1);
+                    
+                }else{
+                    block->reset(false, true, _bgColor,1);
+                }
+            }
+        }
     }
     return true;
 }
@@ -474,13 +492,32 @@ bool GameScene::checkAction(ACTION_TYPE action){
 void GameScene::resetOneRowWithPos(const VECTOR_BLOCK& row,bool isMovePos){
     
     int canTapIndex = getNewTapIndex(false);
-    
+    int canTapIndex1 = -1;
+    if(GameController::getInstance()->getSubType() == GAME_SUBTYPE_Double  && _specialIndex == _tabedBlockCount){
+        canTapIndex1 = getNewTapIndex(false);
+    }
     for (int i = 0;i<row.size();i++) {
         auto block = row[i];
-        if(canTapIndex == i){
-            block->reset(true, true, _blockColor);
+        if(GameController::getInstance()->getSubType() == GAME_SUBTYPE_Mist && _specialIndex == _tabedBlockCount){
+            block->reset(false, false, Color4F(0.2f+_bgColor.r, 0.2f+_bgColor.g, 0.2f+_bgColor.b, 1),1);
+        }else if(canTapIndex == i){
+            if(GameController::getInstance()->getSubType() == GAME_SUBTYPE_Bomb && _specialIndex == _tabedBlockCount){
+                _specialIndex = _tabedBlockCount+hy_function::instance()->randomFrom(5, 15);
+                block->reset(true, true, _blockColor,"res/textures/skull.png",1);
+            }else if(GameController::getInstance()->getSubType() == GAME_SUBTYPE_Bilayer && _specialIndex == _tabedBlockCount){
+                _specialIndex = _tabedBlockCount+hy_function::instance()->randomFrom(5, 15);
+
+                block->reset(true, true, _blockColor,"res/textures/bilayer.png",2);
+            }
+            else{
+                block->reset(true, true, _blockColor,1);
+            }
+        
+        }else if(canTapIndex1 != -1){
+            _specialIndex = _tabedBlockCount+hy_function::instance()->randomFrom(5, 15);
+            block->reset(true, true, _blockColor,1);
         }else{
-            block->reset(false, true, _bgColor);
+            block->reset(false, true, _bgColor,1);
         }
         if (isMovePos) {
             block->setPositionY(block->getPositionY()+_blockSize.height*(_mapSize.height+BUFF_COUNT));
@@ -588,9 +625,17 @@ void GameScene::moveForBack(){
 void GameScene::move(float dt){
     if(GameController::getInstance()->getType() == GAME_TYPE_ARCADE ||
        GameController::getInstance()->getType() == GAME_TYPE_RUSH){
-        _blockLayer->setPositionY(_blockLayer->getPositionY() - GameController::getInstance()->getSpeed()*20-_speedBuf);
+        _blockLayer->setPositionY(_blockLayer->getPositionY() - _speedBuf);
+        if (GameController::getInstance()->getSubType() == GAME_SUBTYPE_Unstable) {
+            if (_gameTime > _timeBlock) {
+                _timeBlock = _gameTime+hy_function::instance()->randomFrom(3, 8);
+            }else{
+                
+            }
+        }else{
+            _speedBuf+=0.01f*GameController::getInstance()->getSpeed();
+        }
         
-        _speedBuf+=0.01f*GameController::getInstance()->getSpeed();
     }
 }
 
@@ -763,7 +808,6 @@ void GameScene::updateDialogUI(){
         scoreText->setString(StringUtils::format("%.3f/s",result));
     }else if(type == GAME_TYPE_RELAY){
         if(GameController::getInstance()->getTimeLimit()-_gameTime>result) result = GameController::getInstance()->getTimeLimit()-_gameTime;
-
         scoreText->setString(StringUtils::format("%.3f\"",result));
         
     }

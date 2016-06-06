@@ -118,6 +118,8 @@ private:
     cocostudio::timeline::ActionTimeline* _gameOverDialogAction;
     
     rapidjson::Value _groupData;
+    int _specialIndex;
+    float _timeBlock;
     
 };
 #endif /* GameScene_hpp */

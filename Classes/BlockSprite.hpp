@@ -29,6 +29,8 @@ public:
     void beTaped(Color4F color);
     bool isTaped(){return _beTaped;};
     void reset(bool canTap,bool inUsing,Color4F color);
+    void reset(bool canTap, bool inUsing, cocos2d::Color4F color,const std::string& tatto,int tapCount);
+    void reset(bool canTap, bool inUsing, cocos2d::Color4F color,int tapCount);
     void blink();
     void playAction();
 private:
@@ -42,9 +44,12 @@ private:
     CustomCommand _customCommand;
     bool _isInUsing;
     bool _isCanTap;
+    int _tapCount;
     Color4F _blinkColor;
     bool _beTaped;
     float _blinkDur;
+    int _beTapedCount;
+    Sprite* _tattoo;
 };
 
 #endif /* BlockSprite_hpp */

@@ -27,7 +27,7 @@ bool BlockSprite::initWithColor(bool canTap,cocos2d::Color4F color,Size size){
     _color = color;
     _size = size;
     _isCanTap = canTap;
-    
+    _tattoo = Sprite::create();
     return true;
 }
 
@@ -50,9 +50,26 @@ void BlockSprite::reset(bool canTap,bool inUsing,Color4F color){
     _beTaped = false;
 }
 
+void BlockSprite::reset(bool canTap, bool inUsing, cocos2d::Color4F color,const std::string& tatto,int TapCount){
+    reset(canTap,_isInUsing,color,1);
+    if (!tatto.empty()) {
+        _tattoo->setSpriteFrame(tatto);
+        _tattoo->setVisible(true);
+    }else{
+        _tattoo->setVisible(false);
+    }
+}
+
+void BlockSprite::reset(bool canTap, bool inUsing, cocos2d::Color4F color,int tapCount){
+    reset(canTap,_isInUsing,color);
+}
+
 void BlockSprite::beTaped(Color4F color){
     setBlockColor(color);
-    _beTaped = true;
+    if(_beTapedCount != _tapCount){
+        _beTapedCount++;
+        _beTaped = true;
+    }
 }
 
 void BlockSprite::blink(){
@@ -112,10 +129,6 @@ void BlockSprite::onDraw(const cocos2d::Mat4 &transform, uint32_t flags){
     
     vertices1[nVertices] = Vec2(0, _size.height);
     colors1[nVertices++] = Color4F::BLACK;
-    
-
-    
-
 
     glVertexAttribPointer(GLProgram::VERTEX_ATTRIB_POSITION,2, GL_FLOAT, GL_FALSE, 0, vertices1);
     glVertexAttribPointer(GLProgram::VERTEX_ATTRIB_COLOR, 4, GL_FLOAT, GL_FALSE, 0, colors1);
@@ -127,6 +140,8 @@ void BlockSprite::onDraw(const cocos2d::Mat4 &transform, uint32_t flags){
 
 void BlockSprite::onEnter(){
     Node::onEnter();
+    _tattoo->setAnchorPoint(Vec2(0.5f,0.5f));
+    
 }
 
 void BlockSprite::draw(Renderer *renderer, const Mat4 &transform, uint32_t flags){

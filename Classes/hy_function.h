@@ -18,6 +18,7 @@ public:
 
 	bool					splite_string_to_vec( const char* in_str, std::vector< std::string > &out_str, char sign = '|' );
 	bool					splite_sint_to_vec( const char* in_str,std::vector< int > &out_int, char sign = '|' );
+    int randomFrom(int n,int m);
 private:
 
 	static hy_function*			instance_p_;
