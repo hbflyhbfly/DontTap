@@ -11,6 +11,7 @@
 #include "ui/UIText.h"
 #include "GameScene.hpp"
 #include "GameController.hpp"
+#include "ad_function.h"
 USING_NS_CC;
 using namespace cocostudio;
 using namespace ui;
@@ -83,8 +84,13 @@ void MainScene::onEnter(){
 //    this->addChild(s);
     this->addChild(_uiNode);
     
-    updateUI();
+    GameController::getInstance()->updateLanguage(_uiNode);
 
+    updateUI();
+    
+    ad_function::instance()->showVideo();
+//    ad_function::instance()->prepareBanner();
+//    ad_function::instance()->showBanner();
 }
 
 void MainScene::updateUI(){

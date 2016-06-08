@@ -28,8 +28,11 @@ _isReallyStart(false),
 _canTabBlockCount(0),
 _tabedBlockCount(0),
 _speedBuf(0),
-_specialIndex(0),
-_timeBlock(0){
+_specialIndex(10),
+_timeBlock(3),
+_speedChange(0),
+_timeIndex(0),
+_cellIndex(0){
     
 }
 
@@ -38,7 +41,7 @@ GameScene::~GameScene(){
     _gameOverUINode->release();
 }
 bool GameScene::init(){
-    if (!LayerColor::initWithColor(Color4B(119,175,91,255))) {
+    if (!LayerColor::initWithColor(Color4B(133,213,98,255))) {
         return false;
     }
     _groupData.SetArray();
@@ -74,6 +77,7 @@ bool GameScene::init(){
     tableView->setDelegate(this);
     tableView->setDirection(ScrollView::Direction::HORIZONTAL);
     tableView->setBounceable(false);
+    tableView->setTag(1);
     tableView->setPosition(Vec2::ZERO);
     listPanel->addChild(tableView);
     
@@ -93,7 +97,7 @@ bool GameScene::init(){
 
     //game content
     _bgColor = Color4F::WHITE;
-    _blockColor = randomBrightColor();
+    _blockColor = GameController::getInstance()->randomColor();
     _blockLayer = Layer::create();
     
     auto listener = EventListenerTouchOneByOne::create();
@@ -112,6 +116,7 @@ bool GameScene::init(){
 
 
 void GameScene::onEnter(){
+    
     LayerColor::onEnter();
     this->addChild(_blockLayer);
     this->addChild(_uiNode);
@@ -121,6 +126,7 @@ void GameScene::onEnter(){
 
     addBlock();
     
+    GameController::getInstance()->updateLanguage(_uiNode);
     scheduleUpdate();
     
 }
@@ -179,7 +185,7 @@ bool GameScene::onTouchBegan(Touch *touch, Event *unused_event){
     Vec2 locT = touch->getLocation();
     Vec2 loc = _blockLayer->convertToNodeSpace(touch->getLocation());
     std::vector<BlockSprite*> row = _blocks.front();
-    bool isHit = false;
+    bool isHit = true;
     for (auto block:row) {
         Rect rectSuccess(block->getPosition()+Vec2(0,-_blockSize.height/3), _blockSize +Size(0,_blockSize.height*2/3));
         Rect rectError(block->getPosition(), _blockSize);
@@ -187,18 +193,19 @@ bool GameScene::onTouchBegan(Touch *touch, Event *unused_event){
         if(block->canTap()){
             if (rectSuccess.containsPoint(loc)) {
                 tap(block);
+                showModelList(false);
+
             }
         }else{
             if (rectError.containsPoint(loc)) {
                 GameController::getInstance()->playSoundEffect("error_piano.m4a", false);
                 block->beTaped(true,Color4F::RED);
+                showModelList(false);
                 gameOver(GAME_TAP_MISTAKE);
             }
         }
-        if (block->isTaped()) {
-            showModelList(false);
-            isHit = true;
-            break;
+        if (!block->isTaped() && block->canTap()) {
+            isHit = false;
         }
     }
     
@@ -206,22 +213,78 @@ bool GameScene::onTouchBegan(Touch *touch, Event *unused_event){
         if (_startLabel->isVisible()) {
             _startLabel->setVisible(false);
         }
-        _blocks.pop_front();
-        _unUsingBlocks.push_front(row);
+        _blocks.erase(_blocks.begin());
+        _unUsingBlocks.insert(_unUsingBlocks.begin(), row);
+        
         if (GameController::getInstance()->getSubType() == GAME_SUBTYPE_Mist) {
             VECTOR_BLOCK newRow = _blocks.front();
-
-            int canTapIndex = getNewTapIndex(false);
-
-            for (int i = 0;i<row.size();i++) {
-                auto block = row[i];
-                if(canTapIndex == i){
-                    block->reset(true, true, _blockColor,1);
-                    
-                }else{
-                    block->reset(false, true, _bgColor,1);
+            bool isShow = true;
+            for (auto block:newRow) {
+                if (block->canTap()) {
+                    isShow = false;
+                    break;
                 }
             }
+            if (isShow) {
+                int canTapIndex = getNewTapIndex(false);
+                
+                for (int i = 0;i<newRow.size();i++) {
+                    auto block = newRow[i];
+                    if(canTapIndex == i){
+                        block->reset(true, true, _blockColor,1);
+                        
+                    }else{
+                        block->reset(false, true, _bgColor,1);
+                    }
+                }
+            }
+            
+        }
+    }else{
+        if (GameController::getInstance()->getSubType() == GAME_SUBTYPE_Bomb) {
+            bool isNext = true;
+            for (auto block:row) {
+                if (block->canTap()) {
+                    isNext = false;
+                    break;
+                }
+            }
+            if (isNext) {
+                isHit = false;
+                std::vector<BlockSprite*> row1 = _blocks[1];
+                for (auto block:row1) {
+                    Rect rectSuccess(block->getPosition()+Vec2(0,-_blockSize.height/3), _blockSize +Size(0,_blockSize.height*2/3));
+                    Rect rectError(block->getPosition(), _blockSize);
+                    
+                    if(block->canTap()){
+                        if (rectSuccess.containsPoint(loc)) {
+                            tap(block);
+                        }
+                    }else{
+                        if (rectError.containsPoint(loc)) {
+                            GameController::getInstance()->playSoundEffect("error_piano.m4a", false);
+                            block->beTaped(true,Color4F::RED);
+                            gameOver(GAME_TAP_MISTAKE);
+                            return true;
+                        }
+                    }
+                    if (block->isTaped()) {
+                        showModelList(false);
+                        isHit = true;
+                        break;
+                    }
+                }
+                if (isHit) {
+                    _blocks.erase(_blocks.begin());
+                    _blocks.erase(_blocks.begin());
+                    
+                    _unUsingBlocks.insert(_unUsingBlocks.begin(), row);
+                    _unUsingBlocks.insert(_unUsingBlocks.begin(), row1);
+                    
+                }
+
+            }
+            
         }
     }
     return true;
@@ -244,6 +307,19 @@ void GameScene::tableCellTouched(TableView* table, TableViewCell* cell)
     rapidjson::Value& data = _groupData[(int)cell->getIdx()];
     if (data["id"].GetString() != GameController::getInstance()->getGameId()) {
         GameController::getInstance()->startGame(data["id"].GetString(),false);
+        _cellIndex = (int)cell->getIdx();
+        
+        auto label = dynamic_cast<Label*>(cell->getChildByTag(1));
+        auto block = dynamic_cast<BlockSprite*>(cell->getChildByTag(2));
+        if (_cellIndex == cell->getIdx()) {
+            label->setColor(Color3B::WHITE);
+            block->changeColor(Color4F::BLACK);
+            auto tableView = dynamic_cast<TableView*>(_uiNode->getChildByName("list_panel")->getChildByTag(1));
+            if (tableView) {
+                tableView->reloadData();
+            }
+
+        }
     }
 }
 
@@ -271,9 +347,10 @@ TableViewCell* GameScene::tableCellAtIndex(TableView *table, ssize_t idx)
 
 void GameScene::setTableCell(ssize_t idx,TableViewCell& cell,bool isAdd){
     if (isAdd) {
-        auto bg = BlockSprite::createWithColor(false, Color4F::YELLOW, Size(260,260));
+        auto bg = BlockSprite::createWithColor(false, Color4F(Color4B(240,196,46,255)), Size(260,260));
         bg->setAnchorPoint(Vec2::ZERO);
         bg->setPosition(Vec2(0, 0));
+        bg->setTag(2);
         cell.addChild(bg);
         
         auto label = Label::createWithSystemFont("", "Helvetica", 40.0);
@@ -282,22 +359,23 @@ void GameScene::setTableCell(ssize_t idx,TableViewCell& cell,bool isAdd){
         label->setAnchorPoint(Vec2(0.5f,0.5f));
         label->setTag(1);
         cell.addChild(label);
-        
-        auto sprite = Sprite::create();
-        sprite->setPosition(Vec2(180,180));
-        sprite->setAnchorPoint(Vec2::ZERO);
-        sprite->setTag(2);
-        cell.addChild(sprite);
     }
     
     auto label = dynamic_cast<Label*>(cell.getChildByTag(1));
+    auto block = dynamic_cast<BlockSprite*>(cell.getChildByTag(2));
+    if (_cellIndex == idx) {
+        
+        label->setTextColor(Color4B::WHITE);
+        block->changeColor(Color4F::BLACK);
+    }else{
+        label->setTextColor(Color4B::BLACK);
+        block->changeColor(Color4F(Color4B(240,196,46,255)));
+    }
     if (_groupData.IsArray()) {
         rapidjson::Value& arrayValue = _groupData[(int)idx];
         std::string s = arrayValue["tid"].GetString();
-        label->setString(s);
+        label->setString(GameController::getInstance()->getTidForKey(s.c_str()));
     }
-    auto sprite = dynamic_cast<Sprite*>(cell.getChildByTag(2));
-    sprite->setSpriteFrame("res/textures/ic_indicator.png");
 }
 
 ssize_t GameScene::numberOfCellsInTableView(TableView *table)
@@ -361,6 +439,9 @@ void GameScene::resetGame(){
     _speedBuf = 0;
     _gameTime = 0.0f;
     _tabedBlockCount = 0;
+    _specialIndex = 10;
+    _timeBlock = 3.0f;
+    _speedChange = 1;
     _progress->setPercent(0);
     _targetLabel->setString(StringUtils::format("%.3f",_gameTime));
     _blockLayer->removeAllChildren();
@@ -401,22 +482,23 @@ void GameScene::tap(BlockSprite* block){
 
 void GameScene::checkPosition(float dt){
     if(checkAction(ACTION_BLOCK_MOVE)) return;
-
     std::vector<BlockSprite*> row_u = _blocks.front();
+
     for (int i = 0;i<row_u.size();i++) {
         auto block = row_u[i];
-        if (!block->isTaped() && block->canTap()) {
-            Vec2 p = _blockLayer->convertToWorldSpace(block->getPosition());
-            if (p.y <= -_blockSize.height) {
-                gameOver(GAME_OVER);
-                GameController::getInstance()->playSoundEffect("error_piano.m4a", false);
-                moveForBack();
-                return;
+        if (block->canTap()) {
+            if(!block->isTaped()){
+                Vec2 p = _blockLayer->convertToWorldSpace(block->getPosition());
+                if (p.y <= -_blockSize.height) {
+                    gameOver(GAME_OVER);
+                    GameController::getInstance()->playSoundEffect("error_piano.m4a", false);
+                    moveForBack();
+                    return;
+                }
+
             }
         }
     }
-    
-    
     
     if (_unUsingBlocks.size() == 0) {
         return;
@@ -500,20 +582,22 @@ void GameScene::resetOneRowWithPos(const VECTOR_BLOCK& row,bool isMovePos){
     
     int canTapIndex = getNewTapIndex(false);
     int canTapIndex1 = -1;
+    if (_tabedBlockCount > _specialIndex) {
+        _specialIndex = _tabedBlockCount+hy_function::instance()->randomFrom(5, 20);
+    }
+    
     if(GameController::getInstance()->getSubType() == GAME_SUBTYPE_Double  && _specialIndex == _tabedBlockCount){
         canTapIndex1 = getNewTapIndex(false);
     }
     for (int i = 0;i<row.size();i++) {
         auto block = row[i];
         if(GameController::getInstance()->getSubType() == GAME_SUBTYPE_Mist && _specialIndex == _tabedBlockCount){
-            block->reset(false, false, Color4F(0.2f+_bgColor.r, 0.2f+_bgColor.g, 0.2f+_bgColor.b, 1),1);
+            block->reset(false, false, Color4F(0.2f+_blockColor.r, 0.2f+_blockColor.g, 0.2f+_blockColor.b, 1),1);
+
         }else if(canTapIndex == i){
             if(GameController::getInstance()->getSubType() == GAME_SUBTYPE_Bomb && _specialIndex == _tabedBlockCount){
-                _specialIndex = _tabedBlockCount+hy_function::instance()->randomFrom(5, 15);
-                block->reset(true, true, _blockColor,"res/textures/skull.png",1);
+                block->reset(false, true, _blockColor,"res/textures/skull.png",1);
             }else if(GameController::getInstance()->getSubType() == GAME_SUBTYPE_Bilayer && _specialIndex == _tabedBlockCount){
-                _specialIndex = _tabedBlockCount+hy_function::instance()->randomFrom(5, 15);
-
                 block->reset(true, true, _blockColor,"res/textures/bilayer.png",2);
             }
             else{
@@ -521,7 +605,6 @@ void GameScene::resetOneRowWithPos(const VECTOR_BLOCK& row,bool isMovePos){
             }
         
         }else if(canTapIndex1 == i){
-            _specialIndex = _tabedBlockCount+hy_function::instance()->randomFrom(5, 15);
             block->reset(true, true, _blockColor,1);
         }else{
             block->reset(false, true, _bgColor,1);
@@ -631,16 +714,32 @@ void GameScene::moveForBack(){
 }
 void GameScene::move(float dt){
     if(GameController::getInstance()->getType() == GAME_TYPE_ARCADE ||
-       GameController::getInstance()->getType() == GAME_TYPE_RUSH){
+       GameController::getInstance()->getType() == GAME_TYPE_RUSH ||
+       GameController::getInstance()->getType() == GAME_TYPE_ARCADE_2){
         _blockLayer->setPositionY(_blockLayer->getPositionY() - 15 -_speedBuf);
         if (GameController::getInstance()->getSubType() == GAME_SUBTYPE_Unstable) {
             if (_gameTime > _timeBlock) {
-                _timeBlock = _gameTime+hy_function::instance()->randomFrom(3, 8);
-            }else{
+                int a[12] = {3,5,-2,3,7,-2,1,5,-4,3,7,-4};
+                _speedChange = a[_timeIndex];
                 
+                _timeIndex++;
+                if(_timeIndex == 11){
+                    _timeIndex = 0;
+                }
+                _timeBlock = _gameTime + 3.0f;
+                
+                log("change----%f",_timeBlock);
+            }else{
+                _speedBuf += 0.006f*_speedChange;
+                log("%d",_speedChange);
+                log("%f",_speedBuf);
+                
+                if (_speedBuf<0) {
+                    _speedBuf+=0.006f*GameController::getInstance()->getSpeed();
+                }
             }
         }else{
-            _speedBuf+=0.01f*GameController::getInstance()->getSpeed();
+            _speedBuf+=0.006f*GameController::getInstance()->getSpeed();
         }
         
     }
@@ -683,7 +782,7 @@ void GameScene::showGameOverUI(GAME_RESULT result){
                 this->addChild(_gameOverUINode);
             }
             _gameOverAction->play("show", false);
-            layout->setBackGroundColor(Color3B(119,175,91));
+            layout->setBackGroundColor(Color3B(133,213,98));
             //Color3B(237,79,79)
             break;
         case GAME_FAIL:
@@ -760,9 +859,12 @@ void GameScene::updateResultUI(){
     
     int count = GameController::getInstance()->getUserData("token", DATA_INT).GetInt();
     token->setString(StringUtils::format("%d",count));
+    rapidjson::Value gameData;
+    GameController::getInstance()->getGameData(GameController::getInstance()->getGameId(), gameData);
     
-    typeText->setString(TYPE_STR_VEC[type]);
-    subTypeText->setString(SUBTYPE_STR_VEC[subType]);
+    typeText->setString(gameData["mode_tid"].GetString());
+    typeText->setString(gameData["tid"].GetString());
+
     if(type == GAME_TYPE_ZEN){
         if(_tabedBlockCount>result) result = _tabedBlockCount;
         scoreText->setString(StringUtils::format("%d",(int)result));
@@ -785,8 +887,7 @@ void GameScene::updateResultUI(){
         scoreText->setString(StringUtils::format("%.3f\"",result));
         
     }
-
-
+    GameController::getInstance()->updateLanguage(_gameOverUINode);
 }
 void GameScene::updateDialogUI(){
     
@@ -818,7 +919,7 @@ void GameScene::updateDialogUI(){
         scoreText->setString(StringUtils::format("%.3f\"",result));
         
     }
-
+    GameController::getInstance()->updateLanguage(_gameOverDialogUINode);
 }
 //ui
 //void GameScene::onDraw(const cocos2d::Mat4 &transform, uint32_t flags){

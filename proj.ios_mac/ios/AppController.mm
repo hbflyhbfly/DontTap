@@ -27,7 +27,8 @@
 #import "cocos2d.h"
 #import "AppDelegate.h"
 #import "RootViewController.h"
-
+#import <HeyzapAds/HeyzapAds.h>
+#import "GameConst.h"
 @implementation AppController
 
 #pragma mark -
@@ -38,6 +39,10 @@ static AppDelegate s_sharedApplication;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {    
 
+    [HeyzapAds startWithPublisherID: Heyzap_Key];
+    
+//    [HeyzapAds presentMediationDebugViewController];
+    
     cocos2d::Application *app = cocos2d::Application::getInstance();
     app->initGLContextAttrs();
     cocos2d::GLViewImpl::convertAttrs();
@@ -85,7 +90,7 @@ static AppDelegate s_sharedApplication;
     cocos2d::Director::getInstance()->setOpenGLView(glview);
 
     app->run();
-
+    
     return YES;
 }
 

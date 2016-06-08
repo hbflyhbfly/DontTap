@@ -1,6 +1,7 @@
 #include "AppDelegate.h"
 #include "MainScene.hpp"
-
+#include "MobClickCpp.h"
+#include "GameConst.h"
 USING_NS_CC;
 
 static cocos2d::Size designResolutionSize = cocos2d::Size(750, 1334);
@@ -35,6 +36,10 @@ static int register_all_packages()
 }
 
 bool AppDelegate::applicationDidFinishLaunching() {
+    //umeng
+    MOBCLICKCPP_START_WITH_APPKEY(Umeng_Key);
+    
+    
     // initialize director
     auto director = Director::getInstance();
     auto glview = director->getOpenGLView();
@@ -80,16 +85,19 @@ bool AppDelegate::applicationDidFinishLaunching() {
 
     // run
     director->runWithScene(scene);
-
+    
     return true;
 }
 
 // This function will be called when the app is inactive. When comes a phone call,it's be invoked too
 void AppDelegate::applicationDidEnterBackground() {
     Director::getInstance()->stopAnimation();
-
+    
     // if you use SimpleAudioEngine, it must be pause
     // SimpleAudioEngine::getInstance()->pauseBackgroundMusic();
+    
+    //umeng
+    umeng::MobClickCpp::applicationDidEnterBackground();
 }
 
 // this function will be called when the app is active again
@@ -98,4 +106,6 @@ void AppDelegate::applicationWillEnterForeground() {
 
     // if you use SimpleAudioEngine, it must resume here
     // SimpleAudioEngine::getInstance()->resumeBackgroundMusic();
+    
+    umeng::MobClickCpp::applicationWillEnterForeground();
 }

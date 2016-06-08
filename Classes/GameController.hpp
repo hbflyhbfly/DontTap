@@ -98,6 +98,7 @@ static std::vector<std::string> SUBTYPE_STR_VEC{
     "Cloudy",
     "Shift"
     };
+static int KEY[] = {0,2,4,5,7,9,11};
 class GameController:public cocos2d::Ref{
 public:
     GameController();
@@ -134,6 +135,11 @@ public:
     void setUserData(const std::string& key,const rapidjson::Value& value);
     rapidjson::Value getUserData(const std::string& key,DATA_TYPE type);
     std::string getRandomGame();
+    void changeLanguage(const char* language = NULL);
+    const char* getTidForKey(const char* key);
+    void updateLanguage(cocos2d::Node* node);
+    void setTidForNode(cocos2d::Node* node,const char* key = NULL);
+    cocos2d::Color4F randomColor();
 private:
     GAME_RESULT _over;
     
@@ -145,6 +151,8 @@ private:
     int _curMusicIndex;
     rapidjson::Document _doc;
     rapidjson::Document _musicDoc;
+    rapidjson::Document _colorDoc;
+    cocos2d::ValueMap _languagedict;
     std::string _gameId;
     GAME_TYPE _gameType;
     GAME_SUBTYPE _gameSubType;

@@ -107,7 +107,7 @@ bool hy_function::splite_sint_to_vec( const char* in_str,std::vector< int > &out
 }
 
 int hy_function::randomFrom(int n,int m){
-    int x = (rand()%(m-n+1))+1;
+    int x = (rand()%(m-n+1))+n;
     return x;
 }
 

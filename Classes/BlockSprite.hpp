@@ -28,8 +28,10 @@ public:
     void setCanTap(bool canTap){_isCanTap = canTap;};
     void beTaped(bool isError,Color4F color);
     bool isTaped(){return _beTaped;};
+    void changeColor(Color4F color);
     void reset(bool canTap,bool inUsing,Color4F color);
     void reset(bool canTap, bool inUsing, cocos2d::Color4F color,const std::string& tatto,int tapCount);
+    void resetBomb(cocos2d::Color4F color,const std::string& tatto);
     void reset(bool canTap, bool inUsing, cocos2d::Color4F color,int tapCount);
     void blink();
     void playAction();

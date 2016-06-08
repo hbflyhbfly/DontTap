@@ -10,6 +10,7 @@
 #include "GameScene.hpp"
 #include "MainScene.hpp"
 #include "hy_function.h"
+#include "ui/UIText.h"
 
 USING_NS_CC;
 GameController* s_gameController = nullptr;
@@ -53,10 +54,17 @@ bool GameController::init(){
         _musicDoc.Parse<0>(contentStr.c_str());
         CC_BREAK_IF(_musicDoc.HasParseError());
         
+        jsonpath = FileUtils::getInstance()->fullPathForFilename("data/ColorValue.json");
+        contentStr = FileUtils::getInstance()->getStringFromFile(jsonpath);
+        _colorDoc.Parse<0>(contentStr.c_str());
+        CC_BREAK_IF(_musicDoc.HasParseError());
+        
         SpriteFrameCache::getInstance()->addSpriteFramesWithFile("plist/textures.plist");
         for (int i = -12; i<= 24; i++) {
             CocosDenshion::SimpleAudioEngine::getInstance()->preloadEffect(StringUtils::format("soumds/piano/%d.mp3",i).c_str());
         }
+        
+        changeLanguage();
         
         ret = true;
     } while (0);
@@ -158,6 +166,8 @@ void GameController::setGame(const std::string& gameId){
             break;
         case GAME_SUBTYPE_Faster:
             _speed = _gameValue;
+        case GAME_SUBTYPE_Unstable:
+            _speed = _gameValue;
         default:
             break;
     }
@@ -187,12 +197,36 @@ bool GameController::getGameDataFrom(const std::string& gameId,rapidjson::Value&
 
 const std::vector<int> GameController::getMusicVec(){
     std::vector<int> music;
+    std::vector<std::string> monosyllable;
     if (_musicDoc.IsArray()) {
         int n = rand()%_musicDoc.Size();
         rapidjson::Value& arrayValue = _musicDoc[n];
         std::string str = arrayValue["music"].GetString();
-        
-        hy_function::instance()->splite_sint_to_vec(str.c_str(), music,'#');
+        int start = arrayValue["scale_start"].GetInt();
+        log("music:%s",arrayValue["tid"].GetString());
+        hy_function::instance()->splite_string_to_vec(str.c_str(), monosyllable,'#');
+        for (auto key:monosyllable) {
+            int octave = 0;
+            int i = 0;
+            std::string str = &key[0];
+            int num = (int)::atoi(str.c_str());
+            while (i < key.size()) {
+                if(key.find_first_of('+',i) != std::string::npos){
+                    octave += 1;
+                }
+                if(key.find_first_of('-',i) != std::string::npos){
+                    octave -= 1;
+                }
+                i++;
+            }
+            if (num != 0) {
+                
+                music.push_back(start + octave*12 + KEY[num-1]);
+            }else{
+                music.push_back(0);
+            }
+            
+        }
     }
     return music;
 }
@@ -286,4 +320,62 @@ rapidjson::Value GameController::getUserData(const std::string& key,DATA_TYPE ty
         value.SetDouble(UserDefault::getInstance()->getDoubleForKey(key.c_str(), 0));
     }
     return value;
+}
+
+void GameController::changeLanguage(const char* language){
+    if (language == NULL) {
+        language = Application::getInstance()->getCurrentLanguageCode();
+    }
+    std::string fullPath = FileUtils::getInstance()->fullPathForFilename(StringUtils::format("localizations/%s.plist",language));
+    _languagedict = FileUtils::getInstance()->getValueMapFromFile(fullPath);
+    
+}
+
+void GameController::updateLanguage(Node* node){
+    setTidForNode(node);
+    Vector<Node*> children = node->getChildren();
+    for (auto child:children) {
+        updateLanguage(child);
+    }
+}
+
+void GameController::setTidForNode(Node* node,const char* key){
+    auto button = dynamic_cast<cocos2d::ui::Button*>(node);
+    auto label = dynamic_cast<Label*>(node);
+    auto textFnt = dynamic_cast<cocos2d::ui::TextBMFont*>(node);
+    auto text = dynamic_cast<cocos2d::ui::Text*>(node);
+    if (key == NULL) {
+        if (button) button->setTitleText(getTidForKey(button->getTitleText().c_str()));
+        if (label) label->setString(getTidForKey(label->getString().c_str()));
+        if (textFnt) textFnt->setString(getTidForKey(textFnt->getString().c_str()));
+        if (text) text->setString(getTidForKey(text->getString().c_str()));
+    }else{
+        if (button) button->setTitleText(getTidForKey(key));
+        if (label) label->setString(getTidForKey(key));
+        if (textFnt) textFnt->setString(getTidForKey(key));
+        if (text) text->setString(getTidForKey(key));
+    }
+    
+}
+const char* GameController::getTidForKey(const char* key){
+    const char* tid = key;
+
+    if(_languagedict.find(key) != _languagedict.end()){
+        tid = _languagedict[key].asString().c_str();
+
+    }
+    return tid;
+}
+
+Color4F GameController::randomColor(){
+    if (_colorDoc.IsArray()) {
+        int n = hy_function::instance()->randomFrom(0,_colorDoc.Size()-1);
+        rapidjson::Value& arrayValue = _colorDoc[n];
+        int r = arrayValue["color_red"].GetInt();
+        int g = arrayValue["color_green"].GetInt();
+        int b = arrayValue["color_blue"].GetInt();
+        
+        return Color4F(Color4B(r,g,b,255));
+    }
+    return Color4F::BLACK;
 }

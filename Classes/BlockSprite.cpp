@@ -46,17 +46,21 @@ BlockSprite* BlockSprite::createWithColor(bool canTap,Color4F color,Size size)
     CC_SAFE_DELETE(sprite);
     return nullptr;
 }
-
+void BlockSprite::changeColor(Color4F color){
+    _color = color;
+}
 void BlockSprite::reset(bool canTap,bool inUsing,Color4F color){
     _color = color;
     _isCanTap = canTap;
     _isInUsing = inUsing;
     _beTaped = false;
     _beTapedCount = 0;
+    _tapCount = 1;
+    _tattoo->setVisible(false);
 }
 
 void BlockSprite::reset(bool canTap, bool inUsing, cocos2d::Color4F color,const std::string& tatto,int TapCount){
-    reset(canTap,_isInUsing,color,1);
+    reset(canTap,inUsing,color,TapCount);
     if (!tatto.empty()) {
         _tattoo->setSpriteFrame(tatto);
         _tattoo->setVisible(true);
@@ -70,20 +74,28 @@ void BlockSprite::reset(bool canTap, bool inUsing, cocos2d::Color4F color,int ta
     _tapCount = tapCount;
 }
 
+void resetBomb(cocos2d::Color4F color,const std::string& tatto){
+    
+}
+
 void BlockSprite::beTaped(bool isError,Color4F color){
     if (isError) {
         _blinkDur = 1.0f;
         setBlockColor(_blinkColor);
     }else{
-        setBlockColor(color);
+        if(_beTapedCount < _tapCount){
+            _beTapedCount++;
+        }
+        if (_beTapedCount == _tapCount) {
+            _beTaped = true;
+        }else{
+            setBlockColor(Color4F(color.r - 0.1f,color.g - 0.1f,color.b - 0.1f,1));
+        }
+        if (_beTaped) {
+            setBlockColor(color);
+        }
     }
-    if(_beTapedCount < _tapCount){
-        _beTapedCount++;
-    }
-    if (_beTapedCount == _tapCount) {
-        _beTaped = true;
-        
-    }
+    
 }
 
 void BlockSprite::blink(){

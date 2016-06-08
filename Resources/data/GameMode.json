@@ -5,7 +5,9 @@
     "sub_mode": "TilesCollected",
     "value": 25,
     "serial": 1,
-    "tid": "25"
+    "tid": "25",
+    "mode_tid":"ClassicMode",
+    "sign_icon": 0
 },
 {
 	"id": "Classic_50",
@@ -13,7 +15,9 @@
     "sub_mode": "TilesCollected",
     "value": 50,
     "serial": 2 ,
-    "tid":"50"
+    "tid":"50",
+    "mode_tid":"ClassicMode",
+    "sign_icon": 0
 },
 {
 	"id": "Classic_Plus",
@@ -21,7 +25,9 @@
     "sub_mode": "Plus",
     "value": 0,
     "serial": 3,
-    "tid":"Plus"
+    "tid":"Plus",
+    "mode_tid":"ClassicMode",
+    "sign_icon": 0
 },
 {
 	"id": "Classic_5",
@@ -29,7 +35,9 @@
     "sub_mode": "TilesSize",
     "value": 5,
     "serial": 4,
-    "tid":"5 x 5"
+    "tid":"5 x 5",
+    "mode_tid":"ClassicMode",
+    "sign_icon": 0
 },
 {
 	"id": "Classic_6",
@@ -37,7 +45,9 @@
     "sub_mode": "TilesSize",
     "value": 6,
     "serial": 5,
-    "tid":"6 x 6"
+    "tid":"6 x 6",
+    "mode_tid":"ClassicMode",
+    "sign_icon": 0
 },
 {
 	"id": "Arcade_normal",
@@ -45,7 +55,9 @@
     "sub_mode": "Normal",
     "value": 1,
     "serial": 1,
-    "tid": "Normal"
+    "tid": "Normal",
+    "mode_tid":"ArcadeMode",
+    "sign_icon": 0
 },
 {
 	"id": "Arcade_faster",
@@ -53,31 +65,29 @@
     "sub_mode": "Faster",
     "value": 2,
     "serial": 2,
-    "tid": "Faster"
-},
-{
-	"id": "Arcade_reverse",
-    "mode": "Arcade",
-    "sub_mode": "Reverse",
-    "value": 0,
-    "serial": 3,
-    "tid": "Reverse"
+    "tid": "Faster",
+    "mode_tid":"ArcadeMode",
+    "sign_icon": 0
 },
 {
 	"id": "Arcade_5",
     "mode": "Arcade",
     "sub_mode": "TilesSize",
     "value": 5,
-    "serial": 4,
-    "tid": "5*5"
+    "serial": 3,
+    "tid": "5 x 5",
+    "mode_tid":"ArcadeMode",
+    "sign_icon": 0
 },
 {
 	"id": "Arcade_6",
     "mode": "Arcade",
     "sub_mode": "TilesSize",
     "value": 6,
-    "serial": 5,
-    "tid": "6*6"
+    "serial": 4,
+    "tid": "6 x 6",
+    "mode_tid":"ArcadeMode",
+    "sign_icon": 0
 },
 {
 	"id": "Zen_15",
@@ -85,7 +95,9 @@
     "sub_mode": "time",
     "value": 15,
     "serial": 1,
-    "tid": "15\""
+    "tid": "15\"",
+    "mode_tid":"ZenMode",
+    "sign_icon": 0
 },
 {
 	"id": "Zen_30",
@@ -93,15 +105,19 @@
     "sub_mode": "time",
     "value": 30,
     "serial": 2,
-    "tid": "30\""
+    "tid": "30\"",
+    "mode_tid":"ZenMode",
+    "sign_icon": 0
 },
 {
 	"id": "Zen_Plus",
-    "mode": "Plus",
+    "mode": "Zen",
     "sub_mode": "Plus",
     "value": 0,
     "serial": 3,
-    "tid": "Plus"
+    "tid": "Plus",
+    "mode_tid":"ZenMode",
+    "sign_icon": 0
 },
 {
 	"id": "Zen_5",
@@ -109,7 +125,9 @@
     "sub_mode": "TilesSize",
     "value": 5,
     "serial": 4,
-    "tid": "5 x 5"
+    "tid": "5 x 5",
+    "mode_tid":"ZenMode",
+    "sign_icon": 0
 },
 {
 	"id": "Zen_6",
@@ -117,7 +135,9 @@
     "sub_mode": "TilesSize",
     "value": 6,
     "serial": 5,
-    "tid": "6 x 6"
+    "tid": "6 x 6",
+    "mode_tid":"ZenMode",
+    "sign_icon": 0
 },
 {
 	"id": "Rush_Normal",
@@ -125,7 +145,9 @@
     "sub_mode": "Normal",
     "value": 1,
     "serial": 1,
-    "tid": "Normal"
+    "tid": "Normal",
+    "mode_tid":"RushMode",
+    "sign_icon": 0
 },
 {
 	"id": "Rush_Reverse",
@@ -133,7 +155,9 @@
     "sub_mode": "Reverse",
     "value": 0,
     "serial": 2,
-    "tid": "Reverse"
+    "tid": "Reverse",
+    "mode_tid":"RushMode",
+    "sign_icon": 0
 },
 {
 	"id": "Rush_Plus",
@@ -141,7 +165,9 @@
     "sub_mode": "Plus",
     "value": 0,
     "serial": 3,
-    "tid": "Plus"
+    "tid": "Plus",
+    "mode_tid":"RushMode",
+    "sign_icon": 0
 },
 {
 	"id": "Rush_5",
@@ -149,7 +175,9 @@
     "sub_mode": "TilesSize",
     "value": 5,
     "serial": 4,
-    "tid": "TilesSize"
+    "tid": "5 x 5",
+    "mode_tid":"RushMode",
+    "sign_icon": 0
 },
 {
 	"id": "Rush_6",
@@ -157,7 +185,9 @@
     "sub_mode": "TilesSize",
     "value": 6,
     "serial": 5,
-    "tid": "Normal"
+    "tid": "6 x 6",
+    "mode_tid":"RushMode",
+    "sign_icon": 0
 },
 {
 	"id": "Relay_8",
@@ -165,7 +195,9 @@
     "sub_mode": "add_time",
     "value": 8,
     "serial": 1,
-    "tid": "8\""
+    "tid": "8\"",
+    "mode_tid":"RelayMode",
+    "sign_icon": 0
 },
 {
 	"id": "Relay_10",
@@ -173,7 +205,9 @@
     "sub_mode": "add_time",
     "value": 10,
     "serial": 2,
-    "tid": "10\""
+    "tid": "10\"",
+    "mode_tid":"RelayMode",
+    "sign_icon": 0
 },
 {
 	"id": "Relay_12",
@@ -181,7 +215,9 @@
     "sub_mode": "add_time",
     "value": 12,
     "serial": 3,
-    "tid": "12\""
+    "tid": "12\"",
+    "mode_tid":"RelayMode",
+    "sign_icon": 0
 },
 {
 	"id": "Relay_5",
@@ -189,7 +225,9 @@
     "sub_mode": "TilesSize",
     "value": 5,
     "serial": 4,
-    "tid": "5 x 5"
+    "tid": "5 x 5",
+    "mode_tid":"RelayMode",
+    "sign_icon": 0
 },
 {
 	"id": "Relay_6",
@@ -197,7 +235,9 @@
     "sub_mode": "TilesSize",
     "value": 6,
     "serial": 5,
-    "tid": "6 x 6"
+    "tid": "6 x 6",
+    "mode_tid":"RelayMode",
+    "sign_icon": 0
 },
 {
 	"id": "Arcade-2_Bomb",
@@ -205,7 +245,9 @@
     "sub_mode": "Bomb",
     "value": 0,
     "serial": 1,
-    "tid": "Bomb"
+    "tid": "Bomb",
+    "mode_tid":"Arcade-2Mode",
+    "sign_icon": 0
 },
 {
 	"id": "Arcade-2_Double",
@@ -213,7 +255,9 @@
     "sub_mode": "Double",
     "value": 0,
     "serial": 2,
-    "tid": "Double"
+    "tid": "Double",
+    "mode_tid":"Arcade-2Mode",
+    "sign_icon": 0
 },
 {
 	"id": "Arcade-2_Bilayer",
@@ -221,7 +265,9 @@
     "sub_mode": "Bilayer",
     "value": 0,
     "serial": 3,
-    "tid": "Bilayer"
+    "tid": "Bilayer",
+    "mode_tid":"Arcade-2Mode",
+    "sign_icon": 0
 },
 {
 	"id": "Arcade-2_Mist",
@@ -229,7 +275,9 @@
     "sub_mode": "Mist",
     "value": 0,
     "serial": 4,
-    "tid": "Mist"
+    "tid": "Mist",
+    "mode_tid":"Arcade-2Mode",
+    "sign_icon": 0
 },
 {
 	"id": "Arcade-2_Unstable",
@@ -237,39 +285,19 @@
     "sub_mode": "Unstable",
     "value": 1,
     "serial": 5,
-    "tid": "Unstable"
-},
-{
-	"id": "Arcade-2_Rotatory",
-    "mode": "Arcade-2",
-    "sub_mode": "Arcade-2_Rotatory",
-    "value": 0,
-    "serial": 6,
-    "tid": "Rotatory"
-},
-{
-	"id": "Arcade-2_Shaky",
-    "mode": "Arcade-2",
-    "sub_mode": "Shaky",
-    "value": 0,
-    "serial": 7,
-    "tid": "Shaky"
+    "tid": "Unstable",
+    "mode_tid":"Arcade-2Mode",
+    "sign_icon": 0
 },
 {
 	"id": "Arcade-2_Cloudy",
     "mode": "Arcade-2",
     "sub_mode": "Cloudy",
     "value": 0,
-    "serial": 8,
-    "tid": "Cloudy"
-},
-{
-	"id": "Arcade-Shift",
-    "mode": "Arcade-2",
-    "sub_mode": "Shift",
-    "value": 0,
-    "serial": 1,
-    "tid": "Shift"
+    "serial": 6,
+    "tid": "Cloudy",
+    "mode_tid":"Arcade-2Mode",
+    "sign_icon": 0
 }
 
 ]

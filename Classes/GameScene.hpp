@@ -22,7 +22,7 @@ USING_NS_CC;
 USING_NS_CC_EXT;
 
 typedef std::vector<BlockSprite*> VECTOR_BLOCK;
-typedef std::list<VECTOR_BLOCK> LIST_VECTOR_BLOCK;
+typedef std::vector<VECTOR_BLOCK> LIST_VECTOR_BLOCK;
 
 
 typedef enum{
@@ -108,6 +108,7 @@ private:
     int _tabedBlockCount;//taped block
     int _canTabBlockCount;//block'count can be taped
     float _speedBuf;
+    int _speedChange;
     bool _isReallyStart;//had first touch
     
     //ui node
@@ -120,6 +121,8 @@ private:
     rapidjson::Value _groupData;
     int _specialIndex;
     float _timeBlock;
+    int _timeIndex;
+    int _cellIndex;
     
 };
 #endif /* GameScene_hpp */
