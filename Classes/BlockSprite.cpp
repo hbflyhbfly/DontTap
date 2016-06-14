@@ -82,6 +82,7 @@ void BlockSprite::beTaped(bool isError,Color4F color){
     if (isError) {
         _blinkDur = 1.0f;
         setBlockColor(_blinkColor);
+        this->runAction(Blink::create(0.6f, 4));
     }else{
         if(_beTapedCount < _tapCount){
             _beTapedCount++;
@@ -89,11 +90,12 @@ void BlockSprite::beTaped(bool isError,Color4F color){
         if (_beTapedCount == _tapCount) {
             _beTaped = true;
         }else{
-            setBlockColor(Color4F(color.r - 0.1f,color.g - 0.1f,color.b - 0.1f,1));
+            setBlockColor(Color4F(_color.r - 0.2f,_color.g - 0.2f,_color.b - 0.2f,1));
         }
         if (_beTaped) {
             setBlockColor(color);
         }
+//        this->runAction(Sequence::create(ScaleTo::create(0.1f, 0.9f),ScaleTo::create(0.1f, 1.0f),NULL));
     }
     
 }

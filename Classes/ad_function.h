@@ -23,6 +23,7 @@ public:
     
     void showInterstitial();
     
+    void incentivized();
     void prepareVideo();
     
     void showVideo();

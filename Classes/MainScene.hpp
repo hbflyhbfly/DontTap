@@ -22,8 +22,8 @@ public:
     virtual void onEnter() override;
     CREATE_FUNC(MainScene);
 private:
-    void updateUI();
+//    void updateUI();
 private:
-    cocos2d::Node* _uiNode;
+//    cocos2d::Node* _uiNode;
 };
 #endif /* MainScene_hpp */

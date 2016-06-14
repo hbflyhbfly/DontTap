@@ -46,16 +46,21 @@ public:
     void onTouchEnded(Touch *touch, Event *unused_event) override;
     void onTouchCancelled(Touch *touch, Event *unused_event) override;
     
-    virtual void scrollViewDidScroll(cocos2d::extension::ScrollView* view)override {};
-    virtual void scrollViewDidZoom(cocos2d::extension::ScrollView* view)override {}
+//    virtual void scrollViewDidScroll(cocos2d::extension::ScrollView* view)override {};
+//    virtual void scrollViewDidZoom(cocos2d::extension::ScrollView* view)override {}
     virtual void tableCellTouched(cocos2d::extension::TableView* table, cocos2d::extension::TableViewCell* cell)override;
     virtual cocos2d::Size tableCellSizeForIndex(cocos2d::extension::TableView *table, ssize_t idx)override;
     virtual cocos2d::extension::TableViewCell* tableCellAtIndex(cocos2d::extension::TableView *table, ssize_t idx)override;
     virtual ssize_t numberOfCellsInTableView(cocos2d::extension::TableView *table)override;
     
     void gameOver(GAME_RESULT result);
-    void showGameOverUI(GAME_RESULT result);
+    void gameContinue();
     void restartGame();
+    void showGameOverUI(GAME_RESULT result);
+    
+    
+    int getTapedBlock(){return _tabedBlockCount;};
+    float getGameResult(){return _gameResult;};
 public:
     Scene* _scene;
 private:
@@ -80,11 +85,15 @@ private:
     void change();
     void setGameModel();
     void resetGame();
+    void resetTargetUI();
     void setTableCell(ssize_t idx,TableViewCell& cell,bool isAdd = false);
     void showModelList(bool isShow);
     void showDone();
+    void dialogShowDone();
+
     void updateResultUI();
     void updateDialogUI();
+    void calculateResult();
 protected:
 //    void onDraw(const cocos2d::Mat4 &transform, uint32_t flags);
     
@@ -106,6 +115,7 @@ private:
     float _curOffset;//layer's offset
     float _gameTime;//current time
     int _tabedBlockCount;//taped block
+    float _gameResult;
     int _canTabBlockCount;//block'count can be taped
     float _speedBuf;
     int _speedChange;
@@ -123,6 +133,8 @@ private:
     float _timeBlock;
     int _timeIndex;
     int _cellIndex;
+    GAME_RESULT _result;
+    int _continueToken;
     
 };
 #endif /* GameScene_hpp */

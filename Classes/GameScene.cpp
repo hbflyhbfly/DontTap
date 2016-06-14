@@ -5,6 +5,9 @@
 //  Created by Syuuhi on 4/30/16.
 //
 //
+#include<stdio.h>
+#include<math.h>
+
 #include "MainScene.hpp"
 #include "GameScene.hpp"
 #include "cocostudio/CocoStudio.h"
@@ -13,6 +16,7 @@
 #include "time.h"
 #include "GameController.hpp"
 #include "hy_function.h"
+#include "ad_function.h"
 USING_NS_CC;
 USING_NS_CC_EXT;
 
@@ -27,12 +31,15 @@ _gameTime(0.0f),
 _isReallyStart(false),
 _canTabBlockCount(0),
 _tabedBlockCount(0),
+_gameResult(0),
 _speedBuf(0),
 _specialIndex(10),
 _timeBlock(3),
 _speedChange(0),
 _timeIndex(0),
-_cellIndex(0){
+_cellIndex(0),
+_result(GAME_NONE),
+_continueToken(100){
     
 }
 
@@ -52,7 +59,6 @@ bool GameScene::init(){
     _gameOverUINode = CSLoader::createNode("ui/GameOver.csb");
     _gameOverUINode->retain();
     _gameOverAction = CSLoader::getInstance()->createTimeline("ui/GameOver.csb");
-    _gameOverAction->setLastFrameCallFunc(CC_CALLBACK_0(GameScene::showDone, this));
 
     _gameOverUINode->runAction(_gameOverAction);
 
@@ -60,13 +66,12 @@ bool GameScene::init(){
     _gameOverDialogUINode = CSLoader::createNode("ui/GameOverDialog.csb");
     _gameOverDialogUINode->retain();
     _gameOverDialogAction = CSLoader::getInstance()->createTimeline("ui/GameOverDialog.csb");
-    _gameOverAction->setLastFrameCallFunc(CC_CALLBACK_0(GameScene::showDone, this));
-
     _gameOverDialogUINode->runAction(_gameOverDialogAction);
 
 //    _gameOverAction->retain();
     //start label
     _startLabel = dynamic_cast<Node*>(_uiNode->getChildByName("start_node"));
+    
     //progress
     _progress = dynamic_cast<LoadingBar*>(_uiNode->getChildByName("progress"));
     _targetLabel = dynamic_cast<TextBMFont*>(_uiNode->getChildByName("target_label"));
@@ -122,13 +127,14 @@ void GameScene::onEnter(){
     this->addChild(_uiNode);
     resetGame();
     setGameModel();
-    updateTargetUI(0);
+    resetTargetUI();
 
     addBlock();
     
     GameController::getInstance()->updateLanguage(_uiNode);
     scheduleUpdate();
     
+    ad_function::instance()->showBanner();
 }
 
 void GameScene::showModelList(bool isShow){
@@ -155,13 +161,15 @@ void GameScene::touchEvent(Ref *pSender, Widget::TouchEventType type){
             int n = (rand()%20)+1;
             GameController::getInstance()->playSoundEffect(StringUtils::format("%d.mp3",n),true);
             if (name == "continue_btn") {
-                
+                gameContinue();
+                _gameOverDialogUINode->removeFromParentAndCleanup(false);
             }else if(name == "over_btn"){
-                showGameOverUI(GAME_FAIL);
 //                GameController::getInstance()->toScene(MAIN_SCENE);
+                showGameOverUI(GAME_FAIL);
             }else if(name == "share_btn"){
                 
             }else if(name == "back_btn"){
+                GameController::getInstance()->gameOver(_result);
                 GameController::getInstance()->toScene(MAIN_SCENE);
             }else if(name == "start_again_btn"){
                 GameController::getInstance()->startAgain();
@@ -202,6 +210,7 @@ bool GameScene::onTouchBegan(Touch *touch, Event *unused_event){
                 block->beTaped(true,Color4F::RED);
                 showModelList(false);
                 gameOver(GAME_TAP_MISTAKE);
+                
             }
         }
         if (!block->isTaped() && block->canTap()) {
@@ -307,19 +316,17 @@ void GameScene::tableCellTouched(TableView* table, TableViewCell* cell)
     rapidjson::Value& data = _groupData[(int)cell->getIdx()];
     if (data["id"].GetString() != GameController::getInstance()->getGameId()) {
         GameController::getInstance()->startGame(data["id"].GetString(),false);
-        _cellIndex = (int)cell->getIdx();
         
         auto label = dynamic_cast<Label*>(cell->getChildByTag(1));
         auto block = dynamic_cast<BlockSprite*>(cell->getChildByTag(2));
-        if (_cellIndex == cell->getIdx()) {
-            label->setColor(Color3B::WHITE);
-            block->changeColor(Color4F::BLACK);
-            auto tableView = dynamic_cast<TableView*>(_uiNode->getChildByName("list_panel")->getChildByTag(1));
-            if (tableView) {
-                tableView->reloadData();
-            }
+        label->setTextColor(Color4B::WHITE);
+        block->changeColor(Color4F::BLACK);
+        
+        int old = _cellIndex;
 
-        }
+        _cellIndex = (int)cell->getIdx();
+        table->updateCellAtIndex(old);
+        GameController::getInstance()->playSoundForClick();
     }
 }
 
@@ -355,7 +362,7 @@ void GameScene::setTableCell(ssize_t idx,TableViewCell& cell,bool isAdd){
         
         auto label = Label::createWithSystemFont("", "Helvetica", 40.0);
         label->setTextColor(Color4B::BLACK);
-        label->setPosition(Vec2(130,130));
+        label->setPosition(Vec2(130,200));
         label->setAnchorPoint(Vec2(0.5f,0.5f));
         label->setTag(1);
         cell.addChild(label);
@@ -410,10 +417,30 @@ void GameScene::updateTargetUI(float dt){
     }else if(GameController::getInstance()->getType() == GAME_TYPE_ARCADE){
         _targetLabel->setString(StringUtils::format("%d",_tabedBlockCount));
     }else if(GameController::getInstance()->getType() == GAME_TYPE_RUSH){
-        _targetLabel->setString(StringUtils::format("%.3f/s",_tabedBlockCount/_gameTime));
+        _targetLabel->setString(StringUtils::format("%.3f/s",_speedBuf));
     }else if(GameController::getInstance()->getType() == GAME_TYPE_RELAY){
         _progress->setPercent((float)_tabedBlockCount/(float)GameController::getInstance()->getTargetCount()*100);
         _targetLabel->setString(StringUtils::format("%.3f\"",GameController::getInstance()->getTimeLimit()-_gameTime));
+    }else if(GameController::getInstance()->getType() == GAME_TYPE_ARCADE_2){
+        _targetLabel->setString(StringUtils::format("%d",_tabedBlockCount));
+    }
+}
+
+void GameScene::resetTargetUI(){
+    if(GameController::getInstance()->getType() == GAME_TYPE_ZEN){
+        _progress->setPercent((float)(GameController::getInstance()->getTimeLimit()-_gameTime)/(float)GameController::getInstance()->getTimeLimit()*100);
+        _targetLabel->setString(StringUtils::format("%d",0));
+        
+    }else if(GameController::getInstance()->getType() == GAME_TYPE_CLASSICS){
+        _progress->setPercent((float)_tabedBlockCount/(float)GameController::getInstance()->getTargetCount()*100);
+        _targetLabel->setString(StringUtils::format("%.3f\"",0.f));
+    }else if(GameController::getInstance()->getType() == GAME_TYPE_ARCADE){
+        _targetLabel->setString(StringUtils::format("%d",0));
+    }else if(GameController::getInstance()->getType() == GAME_TYPE_RUSH){
+        _targetLabel->setString(StringUtils::format("%.3f/s",0.0f));
+    }else if(GameController::getInstance()->getType() == GAME_TYPE_RELAY){
+        _progress->setPercent((float)_tabedBlockCount/(float)GameController::getInstance()->getTargetCount()*100);
+        _targetLabel->setString(StringUtils::format("%.3f\"",0.0f));
     }
 }
 void GameScene::checkPopRow(float dt){
@@ -430,15 +457,32 @@ void GameScene::setGameModel(){
     if(h%2!=0) h +=1;
     
     _blockSize = Size(w,h);
+    auto cloud = _uiNode->getChildByName("cloud");
+    cloud->stopAllActions();
+    if (GameController::getInstance()->getSubType() == GAME_SUBTYPE_Cloudy) {
+        cloud->setVisible(true);
+        
+        cloud->runAction(RepeatForever::create(Sequence::create(
+                                                                MoveTo::create(1.0f, Vec2(cloud->getPositionX(),WIN_SIZE.height*0.5)),
+                                                                MoveTo::create(1.0f, Vec2(cloud->getPositionX(),WIN_SIZE.height*1.0)),
+                                                                MoveTo::create(1.0f, Vec2(cloud->getPositionX(),WIN_SIZE.height*0.2)),
+                                                                MoveTo::create(1.0f, Vec2(cloud->getPositionX(),WIN_SIZE.height*0.9)),
+                                                                MoveTo::create(1.0f, Vec2(cloud->getPositionX(),WIN_SIZE.height*0.3)),
+                                                                MoveTo::create(1.0f, Vec2(cloud->getPositionX(),WIN_SIZE.height*1.0)),NULL)));
+    }else{
+        cloud->setVisible(false);
+    }
 
 }
 
 void GameScene::resetGame(){
     unscheduleUpdate();
+    _result = GAME_NONE;
     _isReallyStart = false;
     _speedBuf = 0;
     _gameTime = 0.0f;
     _tabedBlockCount = 0;
+    _gameResult = 0;
     _specialIndex = 10;
     _timeBlock = 3.0f;
     _speedChange = 1;
@@ -449,7 +493,7 @@ void GameScene::resetGame(){
     _unUsingBlocks.clear();
     _blockLayer->setPositionY(0);
     _curOffset = _blockLayer->getPositionY();
-    
+    _continueToken = 100;
     _gameOverUINode->removeFromParentAndCleanup(false);
     _gameOverDialogUINode->removeFromParentAndCleanup(false);
     showModelList(true);
@@ -473,6 +517,12 @@ void GameScene::tap(BlockSprite* block){
         if (_tabedBlockCount >= GameController::getInstance()->getTargetCount()&&GameController::getInstance()->getTimeLimit()-_gameTime >= 0) {
             _gameTime -= GameController::getInstance()->getTimeLimit();
             _tabedBlockCount = 0;
+            auto labelFly = dynamic_cast<TextBMFont*>(_uiNode->getChildByName("label_fly"));
+            labelFly->setString(StringUtils::format("%.3f",GameController::getInstance()->getTimeLimit()));
+            labelFly->setPositionY(1050);
+            labelFly->setOpacity(255);
+            labelFly->runAction(Spawn::create(MoveTo::create(1.0f, Vec2(labelFly->getPosition()+Vec2(0,100))),FadeOut::create(1.0f), NULL));
+            
         }
     }
     moveForTap(-_blockSize.height);
@@ -492,7 +542,6 @@ void GameScene::checkPosition(float dt){
                 if (p.y <= -_blockSize.height) {
                     gameOver(GAME_OVER);
                     GameController::getInstance()->playSoundEffect("error_piano.m4a", false);
-                    moveForBack();
                     return;
                 }
 
@@ -702,8 +751,10 @@ void GameScene::moveForTap(float offset){
         GameController::getInstance()->getType() == GAME_TYPE_ZEN ||
         GameController::getInstance()->getType() == GAME_TYPE_RELAY) {
         _curOffset += offset;
-        auto action = MoveTo::create(.12f, Vec2(_blockLayer->getPositionX(),_curOffset));
+        float time = (std::fabs(_curOffset-_blockLayer->getPositionY()))/2400.0f;
+        auto action = MoveTo::create(time, Vec2(_blockLayer->getPositionX(),_curOffset));
         _blockLayer->runAction(action);
+        
     }
 }
 
@@ -712,11 +763,12 @@ void GameScene::moveForBack(){
     auto action = MoveTo::create(.12f, Vec2(_blockLayer->getPositionX(),_curOffset));
     _blockLayer->runAction(EaseIn::create(action, 1.0f));
 }
+
 void GameScene::move(float dt){
     if(GameController::getInstance()->getType() == GAME_TYPE_ARCADE ||
        GameController::getInstance()->getType() == GAME_TYPE_RUSH ||
        GameController::getInstance()->getType() == GAME_TYPE_ARCADE_2){
-        _blockLayer->setPositionY(_blockLayer->getPositionY() - 15 -_speedBuf);
+        _blockLayer->setPositionY(_blockLayer->getPositionY() - 25 -_speedBuf);
         if (GameController::getInstance()->getSubType() == GAME_SUBTYPE_Unstable) {
             if (_gameTime > _timeBlock) {
                 int a[12] = {3,5,-2,3,7,-2,1,5,-4,3,7,-4};
@@ -732,7 +784,6 @@ void GameScene::move(float dt){
             }else{
                 _speedBuf += 0.006f*_speedChange;
                 log("%d",_speedChange);
-                log("%f",_speedBuf);
                 
                 if (_speedBuf<0) {
                     _speedBuf+=0.006f*GameController::getInstance()->getSpeed();
@@ -741,6 +792,8 @@ void GameScene::move(float dt){
         }else{
             _speedBuf+=0.006f*GameController::getInstance()->getSpeed();
         }
+        log("%f",_speedBuf);
+
         
     }
 }
@@ -767,14 +820,69 @@ Color4F GameScene::randomBrightColor(){
 }
 
 void GameScene::gameOver(GAME_RESULT result){
-    
-    GameController::getInstance()->gameOver(result);
-    showGameOverUI(result);
     unscheduleUpdate();
+    calculateResult();
+    _result = result;
+    showGameOverUI(result);
+    if(result == GAME_TAP_MISTAKE){
+        
+    }else{
+        GameController::getInstance()->gameOver(result);
+    }
+    
+//    this->runAction(Sequence::create(CallFunc::create([this,result](){
+//        
+//    }),NULL));
+    
 }
 
-void GameScene::showGameOverUI(GAME_RESULT result){
+void GameScene::gameContinue(){
+    if (GameController::getInstance()->getToken() >= _continueToken) {
+        GameController::getInstance()->addToken(-_continueToken);
+        _isReallyStart = false;
+        _result = GAME_NONE;
+        scheduleUpdate();
+        std::vector<BlockSprite*> row = _blocks.front();
+        resetOneRowWithPos(row,false);
+        for (auto block:row) {
+            if (block->canTap()) {
+                Vec2 p = block->convertToWorldSpace(Vec2::ZERO);
+                _startLabel->setPosition(p + _blockSize*0.5f);
+                _startLabel->setVisible(true);
+                break;
+            }
+            
+        }
+        _continueToken*=1.5;
+    }
+}
+void GameScene::calculateResult(){
+    auto type = GameController::getInstance()->getType();
+//    auto subType = GameController::getInstance()->getSubType();
     
+    if(type == GAME_TYPE_ZEN){
+        _gameResult = _tabedBlockCount;
+        
+    }else if(type == GAME_TYPE_CLASSICS){
+        _gameResult = _gameTime;
+        
+    }else if(type == GAME_TYPE_ARCADE){
+        _gameResult = _tabedBlockCount;
+        
+    }else if(type == GAME_TYPE_ARCADE_2){
+        _gameResult = _tabedBlockCount;
+        
+    }else if(type == GAME_TYPE_RUSH){
+        _gameResult = _speedBuf;
+        
+    }else if(type == GAME_TYPE_RELAY){
+        _gameResult = _tabedBlockCount;
+    }
+
+}
+void GameScene::showGameOverUI(GAME_RESULT result){
+    _gameOverAction->setLastFrameCallFunc(CC_CALLBACK_0(GameScene::showDone, this));
+    _gameOverDialogAction->setLastFrameCallFunc(CC_CALLBACK_0(GameScene::dialogShowDone, this));
     auto layout = dynamic_cast<Layout*>(_gameOverUINode->getChildByName("Panel"));
     switch (result) {
         case GAME_SUCCESS:
@@ -798,7 +906,7 @@ void GameScene::showGameOverUI(GAME_RESULT result){
                 this->addChild(_gameOverUINode);
             }
             _gameOverAction->play("show", false);
-            layout->setBackGroundColor(Color3B::BLACK);
+            layout->setBackGroundColor(Color3B(50,50,132));
             break;
         case GAME_TAP_MISTAKE:
             if(!_gameOverDialogUINode->getParent()){
@@ -814,7 +922,32 @@ void GameScene::showGameOverUI(GAME_RESULT result){
     updateDialogUI();
 }
 void GameScene::showDone(){
+    
     GAME_RESULT result = GameController::getInstance()->isGameOver();
+    auto noteFly = _gameOverUINode->getChildByName("Panel")->getChildByName("note_fly");
+
+    if(_tabedBlockCount > 0){
+        
+        auto tokenCount = dynamic_cast<TextBMFont*>(noteFly->getChildByName("token_count"));
+        tokenCount->setString(StringUtils::format("%d",_tabedBlockCount));
+        auto note = _gameOverUINode->getChildByName("Panel")->getChildByName("note");
+        noteFly->setPosition(_gameOverUINode->getChildByName("Panel")->getContentSize()/2);
+        noteFly->setVisible(true);
+        noteFly->runAction(Sequence::create(MoveTo::create(1.0f, note->getPosition()),CallFunc::create([noteFly,this](){
+            noteFly->setVisible(false);
+            int tokenCount = GameController::getInstance()->getUserData("token", DATA_INT).GetInt();
+            auto token = dynamic_cast<cocos2d::ui::Text*>(_gameOverUINode->getChildByName("Panel")->getChildByName("token_text"));
+            
+            token->setString(StringUtils::format("%d",tokenCount));
+        }), NULL));
+    }else{
+        noteFly->setVisible(false);
+    }
+    
+    
+    _gameOverAction->clearLastFrameCallFunc();
+    _gameOverDialogAction->clearLastFrameCallFunc();
+    
     switch (result) {
         case GAME_SUCCESS:
             if(!_gameOverUINode->getParent()){
@@ -826,7 +959,12 @@ void GameScene::showDone(){
             if(!_gameOverUINode->getParent()){
                 this->addChild(_gameOverUINode);
             }
-            _gameOverAction->play("game_fail", true);
+            if(GameController::getInstance()->getType() != GAME_TYPE_CLASSICS){
+                _gameOverAction->play("game_success", true);
+            }else{
+                _gameOverAction->play("game_fail", true);
+            }
+            
 
             break;
         case GAME_OVER:
@@ -836,13 +974,57 @@ void GameScene::showDone(){
             _gameOverAction->play("game_success", true);
             break;
         case GAME_TAP_MISTAKE:
-            if(!_gameOverDialogUINode->getParent()){
-                this->addChild(_gameOverDialogUINode);
+            if(!_gameOverUINode->getParent()){
+                this->addChild(_gameOverUINode);
             }
-            _gameOverDialogAction->play("game_fail", true);
+            if(GameController::getInstance()->getType() != GAME_TYPE_CLASSICS){
+                _gameOverAction->play("game_success", true);
+            }else{
+                _gameOverAction->play("game_fail", true);
+            }
             
             break;
 
+        default:
+            break;
+    }
+}
+
+void GameScene::dialogShowDone(){
+    GAME_RESULT result = GameController::getInstance()->isGameOver();
+    switch (result) {
+//        case GAME_SUCCESS:
+//            if(!_gameOverUINode->getParent()){
+//                this->addChild(_gameOverUINode);
+//            }
+//            _gameOverAction->play("game_success", true);
+//            break;
+//        case GAME_FAIL:
+//            if(!_gameOverUINode->getParent()){
+//                this->addChild(_gameOverUINode);
+//            }
+//            _gameOverAction->play("game_fail", true);
+//            
+//            break;
+//        case GAME_OVER:
+//            if(!_gameOverUINode->getParent()){
+//                this->addChild(_gameOverUINode);
+//            }
+//            _gameOverAction->play("game_success", true);
+//            break;
+        case GAME_TAP_MISTAKE:
+            if(!_gameOverDialogUINode->getParent()){
+                this->addChild(_gameOverDialogUINode);
+            }
+            if (GameController::getInstance()->getType() == GAME_TYPE_CLASSICS) {
+                _gameOverDialogAction->play("game_fail", true);
+            }else{
+                _gameOverDialogAction->play("game_success", true);
+            }
+            
+            
+            break;
+            
         default:
             break;
     }
@@ -851,73 +1033,117 @@ void GameScene::updateResultUI(){
     auto token = dynamic_cast<cocos2d::ui::Text*>(_gameOverUINode->getChildByName("Panel")->getChildByName("token_text"));
     auto typeText = dynamic_cast<cocos2d::ui::Text*>(_gameOverUINode->getChildByName("Panel")->getChildByName("game_type"));
     auto subTypeText = dynamic_cast<cocos2d::ui::Text*>(_gameOverUINode->getChildByName("Panel")->getChildByName("game_subtype"));
-    auto resultText = dynamic_cast<cocos2d::ui::Text*>(_gameOverUINode->getChildByName("Panel")->getChildByName("result"));
+//    auto resultText = dynamic_cast<cocos2d::ui::Text*>(_gameOverUINode->getChildByName("Panel")->getChildByName("result"));
+    auto resultText_1 = dynamic_cast<cocos2d::ui::Text*>(_gameOverUINode->getChildByName("Panel")->getChildByName("result_1"));
+
     auto scoreText = dynamic_cast<TextBMFont*>(_gameOverUINode->getChildByName("Panel")->getChildByName("result_score"));
-    GAME_TYPE type = GameController::getInstance()->getType();
-    GAME_SUBTYPE subType = GameController::getInstance()->getSubType();
-    float result = GameController::getInstance()->getUserResult(type, subType);
+    auto scoreText_1 = dynamic_cast<TextBMFont*>(_gameOverUINode->getChildByName("Panel")->getChildByName("result_score_1"));
     
-    int count = GameController::getInstance()->getUserData("token", DATA_INT).GetInt();
-    token->setString(StringUtils::format("%d",count));
+    
+    int tokenCount = GameController::getInstance()->getUserData("token", DATA_INT).GetInt();
+    token->setString(StringUtils::format("%d",tokenCount - _tabedBlockCount > 0?tokenCount - _tabedBlockCount:0));
     rapidjson::Value gameData;
     GameController::getInstance()->getGameData(GameController::getInstance()->getGameId(), gameData);
     
     typeText->setString(gameData["mode_tid"].GetString());
-    typeText->setString(gameData["tid"].GetString());
+    subTypeText->setString(gameData["tid"].GetString());
 
-    if(type == GAME_TYPE_ZEN){
-        if(_tabedBlockCount>result) result = _tabedBlockCount;
-        scoreText->setString(StringUtils::format("%d",(int)result));
+    GAME_TYPE type = GameController::getInstance()->getType();
+//    GAME_SUBTYPE subType = GameController::getInstance()->getSubType();
+    float record = GameController::getInstance()->getUserResult(GameController::getInstance()->getGameId());
+    
+    resultText_1->setString("BEST");
+    
+    if(type == GAME_TYPE_CLASSICS){
         
-    }else if(type == GAME_TYPE_CLASSICS){
-        if(_gameTime>result) result = _gameTime;
-        
-        scoreText->setString(StringUtils::format("%.3f\"",result));
-    }else if(type == GAME_TYPE_ARCADE){
-        if(_tabedBlockCount>result) result = _tabedBlockCount;
-        
-        scoreText->setString(StringUtils::format("%d",(int)result));
-    }else if(type == GAME_TYPE_RUSH){
-        if(_tabedBlockCount/_gameTime>result) result = _tabedBlockCount/_gameTime;
-        
-        scoreText->setString(StringUtils::format("%.3f/s",result));
-    }else if(type == GAME_TYPE_RELAY){
-        if(GameController::getInstance()->getTimeLimit()-_gameTime>result) result = GameController::getInstance()->getTimeLimit()-_gameTime;
-        
-        scoreText->setString(StringUtils::format("%.3f\"",result));
-        
+        if (_result == GAME_SUCCESS) {
+            if (_gameResult < record) {
+                record = _gameResult;
+                resultText_1->setString("NEW BEST");
+            }else{
+                resultText_1->setString("BEST");
+            }
+        }
+    }else{
+        if (_gameResult > record) {
+            record = _gameResult;
+            resultText_1->setString("NEW BEST");
+        }else{
+            resultText_1->setString("BEST");
+        }
     }
+    
+    
+    if(type == GAME_TYPE_ZEN || type == GAME_TYPE_ARCADE || type == GAME_TYPE_RELAY || type == GAME_TYPE_ARCADE_2){
+        scoreText->setString(StringUtils::format("%d",(int)record));
+        scoreText_1->setString(StringUtils::format("%d",(int)_gameResult));
+
+    }else if(type == GAME_TYPE_CLASSICS){
+        
+        scoreText->setString(StringUtils::format("%.3f\"",record));
+        scoreText_1->setString(StringUtils::format("%.3f\"",_gameResult));
+
+    }else if(type == GAME_TYPE_RUSH){
+        
+        scoreText->setString(StringUtils::format("%.3f/s",record));
+        scoreText_1->setString(StringUtils::format("%.3f/s",_gameResult));
+}
+    
+    
+    
     GameController::getInstance()->updateLanguage(_gameOverUINode);
 }
 void GameScene::updateDialogUI(){
     
-    auto resultText = dynamic_cast<Label*>(_gameOverDialogUINode->getChildByName("Panel")->getChildByName("result_text"));
-    auto tipsText = dynamic_cast<Label*>(_gameOverDialogUINode->getChildByName("Panel")->getChildByName("tips"));
-    
+//    auto resultText = dynamic_cast<Label*>(_gameOverDialogUINode->getChildByName("Panel")->getChildByName("result_text"));
+//    auto tipsText = dynamic_cast<Label*>(_gameOverDialogUINode->getChildByName("Panel")->getChildByName("tips"));
+    auto scoreTead = dynamic_cast<Text*>(_gameOverDialogUINode->getChildByName("Panel")->getChildByName("score_head"));
     auto scoreText = dynamic_cast<TextBMFont*>(_gameOverDialogUINode->getChildByName("Panel")->getChildByName("score_text"));
+    auto scoreText_1 = dynamic_cast<TextBMFont*>(_gameOverDialogUINode->getChildByName("Panel")->getChildByName("score_text_1"));
+    
+    auto tokenCost = dynamic_cast<Text*>(_gameOverDialogUINode->getChildByName("Panel")->getChildByName("continue_game")->getChildByName("token_cost"));
+    tokenCost->setString(StringUtils::format("%d",_continueToken));
     GAME_TYPE type = GameController::getInstance()->getType();
-    GAME_SUBTYPE subType = GameController::getInstance()->getSubType();
-    float result = GameController::getInstance()->getUserResult(type, subType);
-    if(type == GAME_TYPE_ZEN){
-        if(_tabedBlockCount>result) result = _tabedBlockCount;
-        scoreText->setString(StringUtils::format("%d",(int)result));
+//    GAME_SUBTYPE subType = GameController::getInstance()->getSubType();
+    float record = GameController::getInstance()->getUserResult(GameController::getInstance()->getGameId());
+    
+    scoreTead->setString("BEST");
+    
+    
+    
+    if(type == GAME_TYPE_CLASSICS){
+        if (_result == GAME_SUCCESS) {
+            if (_gameResult < record) {
+                record = _gameResult;
+                scoreTead->setString("NEW BEST");
+            }else{
+                scoreTead->setString("BEST");
+            }
+        }
         
+    }else{
+        if (_gameResult > record) {
+            record = _gameResult;
+            scoreTead->setString("NEW BEST");
+        }else{
+            scoreTead->setString("BEST");
+        }
+    }
+    
+    if(type == GAME_TYPE_ZEN || type == GAME_TYPE_ARCADE || type == GAME_TYPE_RELAY || type == GAME_TYPE_ARCADE_2){
+        scoreText->setString(StringUtils::format("%d",(int)record));
+        scoreText_1->setString(StringUtils::format("%d",(int)_gameResult));
+
     }else if(type == GAME_TYPE_CLASSICS){
-        if(_gameTime>result) result = _gameTime;
 
-        scoreText->setString(StringUtils::format("%.3f\"",result));
-    }else if(type == GAME_TYPE_ARCADE){
-        if(_tabedBlockCount>result) result = _tabedBlockCount;
+        scoreText->setString(StringUtils::format("%.3f\"",record));
+        scoreText_1->setString(StringUtils::format("%.3f\"",_gameResult));
 
-        scoreText->setString(StringUtils::format("%d",(int)result));
     }else if(type == GAME_TYPE_RUSH){
-        if(_tabedBlockCount/_gameTime>result) result = _tabedBlockCount/_gameTime;
 
-        scoreText->setString(StringUtils::format("%.3f/s",result));
-    }else if(type == GAME_TYPE_RELAY){
-        if(GameController::getInstance()->getTimeLimit()-_gameTime>result) result = GameController::getInstance()->getTimeLimit()-_gameTime;
-        scoreText->setString(StringUtils::format("%.3f\"",result));
-        
+        scoreText->setString(StringUtils::format("%.3f/s",record));
+        scoreText_1->setString(StringUtils::format("%.3f/s",_gameResult));
+
     }
     GameController::getInstance()->updateLanguage(_gameOverDialogUINode);
 }

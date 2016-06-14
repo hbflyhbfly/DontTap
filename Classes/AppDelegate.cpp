@@ -2,6 +2,9 @@
 #include "MainScene.hpp"
 #include "MobClickCpp.h"
 #include "GameConst.h"
+#include "ad_function.h"
+#include "GameController.hpp"
+
 USING_NS_CC;
 
 static cocos2d::Size designResolutionSize = cocos2d::Size(750, 1334);
@@ -53,7 +56,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
     }
 
     // turn on display FPS
-    director->setDisplayStats(true);
+    director->setDisplayStats(false);
 
     // set FPS. the default value is 1.0/60 if you don't call this
     director->setAnimationInterval(1.0 / 60);
@@ -73,12 +76,14 @@ bool AppDelegate::applicationDidFinishLaunching() {
     }
     // if the frame's height is smaller than the height of medium size.
     else
-    {        
+    {
         director->setContentScaleFactor(MIN(smallResolutionSize.height/designResolutionSize.height, smallResolutionSize.width/designResolutionSize.width));
     }
 
     register_all_packages();
-    FileUtils::getInstance()->setDefaultResourceRootPath("Resources");
+    FileUtils::getInstance()->addSearchPath("Resources");
+    
+    GameController::getInstance()->initUser();
     
     // create a scene. it's an autorelease object
     auto scene = MainScene::createScene();
@@ -86,6 +91,8 @@ bool AppDelegate::applicationDidFinishLaunching() {
     // run
     director->runWithScene(scene);
     
+    ad_function::instance()->prepareBanner();
+//    ad_function::instance()->hideBanner();
     return true;
 }
 

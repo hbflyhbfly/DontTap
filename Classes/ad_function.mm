@@ -13,9 +13,60 @@
 
 #import "GameConst.h"
 #import <HeyzapAds/HeyzapAds.h>
-
+//#include <AdsHeyZap.h>
 //#include <AdsMogoInterstitial.h>
 #include <AdsmogoBanner.h>
+
+#include "GameController.hpp"
+
+
+#define LOG_METHOD_NAME_TO_CONSOLE_WITH_STRING(str) [self logToConsole:[NSString stringWithFormat:@"%@ %@", NSStringFromSelector(_cmd), str]]
+
+@interface HZIncentivized: NSObject<HZIncentivizedAdDelegate>
+{
+    
+}
+
+@end
+
+@implementation HZIncentivized
+
++ (HZIncentivized *)sharedIncentivized {
+    static HZIncentivized *instance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        instance = [self new];
+    });
+    return instance;
+}
+
+/** Called when a user successfully completes viewing an ad */
+- (void)didCompleteAdWithTag: (NSString *) tag{
+    GameController::getInstance()->addTokenForAdReward(500);
+//    LOG_METHOD_NAME_TO_CONSOLE_WITH_STRING(tag);
+}
+/** Called when a user does not complete the viewing of an ad */
+- (void)didFailToCompleteAdWithTag: (NSString *) tag{
+//    LOG_METHOD_NAME_TO_CONSOLE_WITH_STRING(tag);
+}
+
+-(void)showIncentivizedAd{
+    [HZIncentivizedAd fetchWithCompletion:^(BOOL result, NSError *error) {
+        if (result) {
+            [HZIncentivizedAd setDelegate:self];
+            [HZIncentivizedAd show];
+        }
+    }];
+}
+
+
+-(void)dealloc{
+    [super dealloc];
+}
+
+@end
+
+
 
 static ad_function* ad_function_instance_p_ = NULL;
 //////////////////////////////////////////////////////////////////////////////////
@@ -39,11 +90,11 @@ ad_function* ad_function::instance()
 void ad_function::prepareBanner(){
     AdsmogoBanner::sharedBanner()->createBanner(Mogo_Key,AdsmogoBannerTypeNormalBanner,
                                                 AdMoGoPointTypeDown_middle,false);
+    hideBanner();
     
 }
 
 void ad_function::showBanner(){
-    AdsmogoBanner::sharedBanner()->refreshBanner();
     AdsmogoBanner::sharedBanner()->showBanner();
 }
 
@@ -52,12 +103,28 @@ void ad_function::hideBanner(){
 }
 
 void ad_function::showVideo(){
-    [HZVideoAd fetch];
-    [HZVideoAd show];
+    [HZVideoAd fetchWithCompletion:^(BOOL result, NSError *error) {
+        if (result) {
+            [HZVideoAd show];
+        }
+    }];
+    
 }
 
 
 void ad_function::showInterstitial(){
-    [HZInterstitialAd fetch];
-    [HZInterstitialAd show];
+    [HZInterstitialAd fetchWithCompletion:^(BOOL result, NSError *error) {
+        if (result) {
+            [HZInterstitialAd show];
+        }
+    }];
 }
+
+void ad_function::incentivized(){
+    
+    
+    [[HZIncentivized sharedIncentivized] showIncentivizedAd];
+    //    [HZIncentivizedAd show];
+}
+
+

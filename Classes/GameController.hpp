@@ -26,7 +26,8 @@ typedef enum {
 typedef enum {
     DATA_INT = -1,
     DATA_STRING = 0,
-    DATA_DOUBLE = 1
+    DATA_DOUBLE = 1,
+    DATA_BOOL = 2
 } DATA_TYPE;
 
 typedef enum {
@@ -106,6 +107,7 @@ public:
     static GameController* getInstance();
     
     virtual bool init();
+    void initUser();
     void startGame(const std::string& gameId = "classic_25",bool isReplace = false);
     void setGame(const std::string& gameId = "classic_25");
     void gameOver(GAME_RESULT result);
@@ -115,7 +117,8 @@ public:
     bool getGameData(const std::string& gameId,rapidjson::Value& value);
     bool getGroupWithType(GAME_TYPE gameType,rapidjson::Value& group);
     bool getCurrentGroup(rapidjson::Value& group);
-    const std::vector<int> getMusicVec();
+    const std::vector<int> getMusicVec(int index = 0);
+    bool getCanUseMusic(rapidjson::Value& group);
     const std::string& getGameId(){return _gameId;};
     GAME_SUBTYPE getSubType(){return _gameSubType;};
     GAME_TYPE getType(){return _gameType;};
@@ -126,12 +129,14 @@ public:
     float getSpeed(){return _speed;};
     
     void toScene(GAME_SCENE_TYPE scene);
-    
+    int getToken();
     void addToken(int amount);
+    void addTokenForAdReward(int amount);
     void playSoundEffect(const std::string& sound,bool isPiano);
+    void playSoundForClick();
     void playPianoSount();
-    float getUserResult(GAME_TYPE tyep,GAME_SUBTYPE subtype);
-    void setUserResult(GAME_TYPE type,GAME_SUBTYPE subtype,float result);
+    float getUserResult(const std::string& id);
+    void setUserResult(const std::string& id,float result);
     void setUserData(const std::string& key,const rapidjson::Value& value);
     rapidjson::Value getUserData(const std::string& key,DATA_TYPE type);
     std::string getRandomGame();
@@ -140,6 +145,20 @@ public:
     void updateLanguage(cocos2d::Node* node);
     void setTidForNode(cocos2d::Node* node,const char* key = NULL);
     cocos2d::Color4F randomColor();
+#pragma music
+    void setMusic();
+    bool getMusicData(int index,rapidjson::Value& value);
+    bool getMusicData(const std::string& id,rapidjson::Value& value);
+    int getMusicCount(){return _musicDoc.Size();};
+    bool buyMusic(const std::string& id);
+    bool haveBuy(const std::string& musicId);
+    bool selectMusic(const std::string& musicId);
+    bool isSelectedMusic(const std::string& musicId);
+    void showAd();
+    bool setPlayMode(bool flag = true);
+    bool getPlayMode();
+    int setPlayIndex(int index);
+    int getPlayIndex();
 private:
     GAME_RESULT _over;
     
@@ -158,6 +177,8 @@ private:
     GAME_SUBTYPE _gameSubType;
     int _gameValue;
     GameScene* _gameScene;
+    int _gameCount;
+    int _gameIndex;
 };
 #endif /* GameController_hpp */
 
