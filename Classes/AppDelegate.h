@@ -11,6 +11,7 @@ The reason for implement as private inheritance is to hide some interface call b
 class  AppDelegate : private cocos2d::Application
 {
 public:
+    
     AppDelegate();
     virtual ~AppDelegate();
 

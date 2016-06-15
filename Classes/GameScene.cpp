@@ -192,38 +192,63 @@ bool GameScene::onTouchBegan(Touch *touch, Event *unused_event){
     
     Vec2 locT = touch->getLocation();
     Vec2 loc = _blockLayer->convertToNodeSpace(touch->getLocation());
-    std::vector<BlockSprite*> row = _blocks.front();
-    bool isHit = true;
-    for (auto block:row) {
-        Rect rectSuccess(block->getPosition()+Vec2(0,-_blockSize.height/3), _blockSize +Size(0,_blockSize.height*2/3));
-        Rect rectError(block->getPosition(), _blockSize);
-
-        if(block->canTap()){
-            if (rectSuccess.containsPoint(loc)) {
-                tap(block);
-                showModelList(false);
-
-            }
-        }else{
-            if (rectError.containsPoint(loc)) {
-                GameController::getInstance()->playSoundEffect("error_piano.m4a", false);
-                block->beTaped(true,Color4F::RED);
-                showModelList(false);
-                gameOver(GAME_TAP_MISTAKE);
-                
+    
+    bool isHit = false;
+    bool isNext = true;
+    int i = 0;
+    while (isNext && i!= _blocks.size()) {
+        std::vector<BlockSprite*> row = _blocks[i];
+        
+        for (auto block:row) {
+            Rect rectSuccess(block->getPosition()+Vec2(0,-_blockSize.height/3), _blockSize +Size(0,_blockSize.height*2/3));
+            Rect rectError(block->getPosition(), _blockSize);
+            if(block->canTap()){
+                isNext = false;
+                if (rectSuccess.containsPoint(loc)) {
+                    tap(block);
+                    
+                    if (block->isTaped()) {
+                        isHit = true;
+                        break;
+                    }
+                    
+                }
+            }else{
+                if (rectError.containsPoint(loc)) {
+                    isHit = true;
+                    GameController::getInstance()->playSoundEffect("error_piano.m4a", false);
+                    block->beTaped(true,Color4F::RED);
+                    gameOver(GAME_TAP_MISTAKE);
+                    break;
+                }
             }
         }
-        if (!block->isTaped() && block->canTap()) {
-            isHit = false;
-        }
+
+        i++;
     }
     
+    
     if (isHit) {
+        showModelList(false);
         if (_startLabel->isVisible()) {
             _startLabel->setVisible(false);
         }
-        _blocks.erase(_blocks.begin());
-        _unUsingBlocks.insert(_unUsingBlocks.begin(), row);
+        bool canOver = true;
+        for (int j = 0; j < i; j++) {
+            auto row = _blocks.front();
+            
+            for (auto block:row) {
+                if (block->canTap() && !block->isTaped()) {
+                    canOver = false;
+                    break;
+                }
+            }
+            if(canOver){
+                _blocks.erase(_blocks.begin());
+                _unUsingBlocks.insert(_unUsingBlocks.begin(), row);
+            }
+        }
+        
         
         if (GameController::getInstance()->getSubType() == GAME_SUBTYPE_Mist) {
             VECTOR_BLOCK newRow = _blocks.front();
@@ -246,52 +271,6 @@ bool GameScene::onTouchBegan(Touch *touch, Event *unused_event){
                         block->reset(false, true, _bgColor,1);
                     }
                 }
-            }
-            
-        }
-    }else{
-        if (GameController::getInstance()->getSubType() == GAME_SUBTYPE_Bomb) {
-            bool isNext = true;
-            for (auto block:row) {
-                if (block->canTap()) {
-                    isNext = false;
-                    break;
-                }
-            }
-            if (isNext) {
-                isHit = false;
-                std::vector<BlockSprite*> row1 = _blocks[1];
-                for (auto block:row1) {
-                    Rect rectSuccess(block->getPosition()+Vec2(0,-_blockSize.height/3), _blockSize +Size(0,_blockSize.height*2/3));
-                    Rect rectError(block->getPosition(), _blockSize);
-                    
-                    if(block->canTap()){
-                        if (rectSuccess.containsPoint(loc)) {
-                            tap(block);
-                        }
-                    }else{
-                        if (rectError.containsPoint(loc)) {
-                            GameController::getInstance()->playSoundEffect("error_piano.m4a", false);
-                            block->beTaped(true,Color4F::RED);
-                            gameOver(GAME_TAP_MISTAKE);
-                            return true;
-                        }
-                    }
-                    if (block->isTaped()) {
-                        showModelList(false);
-                        isHit = true;
-                        break;
-                    }
-                }
-                if (isHit) {
-                    _blocks.erase(_blocks.begin());
-                    _blocks.erase(_blocks.begin());
-                    
-                    _unUsingBlocks.insert(_unUsingBlocks.begin(), row);
-                    _unUsingBlocks.insert(_unUsingBlocks.begin(), row1);
-                    
-                }
-
             }
             
         }
@@ -512,20 +491,23 @@ void GameScene::restartGame(){
 void GameScene::tap(BlockSprite* block){
     if(!_isReallyStart) _isReallyStart = true;
     block->beTaped(false,Color4F::GRAY);
-    _tabedBlockCount ++;
-    if (GameController::getInstance()->getType() == GAME_TYPE_RELAY) {
-        if (_tabedBlockCount >= GameController::getInstance()->getTargetCount()&&GameController::getInstance()->getTimeLimit()-_gameTime >= 0) {
-            _gameTime -= GameController::getInstance()->getTimeLimit();
-            _tabedBlockCount = 0;
-            auto labelFly = dynamic_cast<TextBMFont*>(_uiNode->getChildByName("label_fly"));
-            labelFly->setString(StringUtils::format("%.3f",GameController::getInstance()->getTimeLimit()));
-            labelFly->setPositionY(1050);
-            labelFly->setOpacity(255);
-            labelFly->runAction(Spawn::create(MoveTo::create(1.0f, Vec2(labelFly->getPosition()+Vec2(0,100))),FadeOut::create(1.0f), NULL));
-            
+    if (block->canTap() && block->isTaped()) {
+        _tabedBlockCount ++;
+        if (GameController::getInstance()->getType() == GAME_TYPE_RELAY) {
+            if (_tabedBlockCount >= GameController::getInstance()->getTargetCount()&&GameController::getInstance()->getTimeLimit()-_gameTime >= 0) {
+                _gameTime -= GameController::getInstance()->getTimeLimit();
+                _tabedBlockCount = 0;
+                auto labelFly = dynamic_cast<TextBMFont*>(_uiNode->getChildByName("label_fly"));
+                labelFly->setString(StringUtils::format("%.3f",GameController::getInstance()->getTimeLimit()));
+                labelFly->setPositionY(1050);
+                labelFly->setOpacity(255);
+                labelFly->runAction(Spawn::create(MoveTo::create(1.0f, Vec2(labelFly->getPosition()+Vec2(0,100))),FadeOut::create(1.0f), NULL));
+                
+            }
         }
+        moveForTap(-_blockSize.height);
     }
-    moveForTap(-_blockSize.height);
+    
     GameController::getInstance()->playPianoSount();
 
 }
@@ -536,15 +518,12 @@ void GameScene::checkPosition(float dt){
 
     for (int i = 0;i<row_u.size();i++) {
         auto block = row_u[i];
-        if (block->canTap()) {
-            if(!block->isTaped()){
-                Vec2 p = _blockLayer->convertToWorldSpace(block->getPosition());
-                if (p.y <= -_blockSize.height) {
-                    gameOver(GAME_OVER);
-                    GameController::getInstance()->playSoundEffect("error_piano.m4a", false);
-                    return;
-                }
-
+        if (block->canTap() && !block->isTaped()) {
+            Vec2 p = _blockLayer->convertToWorldSpace(block->getPosition());
+            if (p.y <= -_blockSize.height) {
+                gameOver(GAME_OVER);
+                GameController::getInstance()->playSoundEffect("error_piano.m4a", false);
+                return;
             }
         }
     }
@@ -768,10 +747,10 @@ void GameScene::move(float dt){
     if(GameController::getInstance()->getType() == GAME_TYPE_ARCADE ||
        GameController::getInstance()->getType() == GAME_TYPE_RUSH ||
        GameController::getInstance()->getType() == GAME_TYPE_ARCADE_2){
-        _blockLayer->setPositionY(_blockLayer->getPositionY() - 25 -_speedBuf);
+        _blockLayer->setPositionY(_blockLayer->getPositionY() - 18 -_speedBuf);
         if (GameController::getInstance()->getSubType() == GAME_SUBTYPE_Unstable) {
             if (_gameTime > _timeBlock) {
-                int a[12] = {3,5,-2,3,7,-2,1,5,-4,3,7,-4};
+                int a[12] = {1,5,-2,1,7,-2,1,5,-4,-3,7,-4};
                 _speedChange = a[_timeIndex];
                 
                 _timeIndex++;
@@ -853,7 +832,7 @@ void GameScene::gameContinue(){
             }
             
         }
-        _continueToken*=1.5;
+        _continueToken*=2;
     }
 }
 void GameScene::calculateResult(){
