@@ -80,7 +80,6 @@ private:
     void move(float dt);
     void moveForTap(float offset);
     void moveForBack();
-    void moveBack();
     void tap(BlockSprite* block);
     void change();
     void setGameModel();

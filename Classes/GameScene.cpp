@@ -48,9 +48,10 @@ GameScene::~GameScene(){
     _gameOverUINode->release();
 }
 bool GameScene::init(){
-    if (!LayerColor::initWithColor(Color4B(133,213,98,255))) {
+    if (!LayerColor::initWithColor(Color4B::WHITE)) {
         return false;
     }
+//    this->setColor(Color3B(Color4B(133,213,98,255)));
     _groupData.SetArray();
     GameController::getInstance()->getCurrentGroup(_groupData);
     //ui
@@ -189,7 +190,7 @@ void GameScene::touchEvent(Ref *pSender, Widget::TouchEventType type){
 
 bool GameScene::onTouchBegan(Touch *touch, Event *unused_event){
     
-    if(GameController::getInstance()->isGameOver() != GAME_NONE) return false;
+    if(_result != GAME_NONE) return false;
     
     Vec2 locT = touch->getLocation();
     Vec2 loc = _blockLayer->convertToNodeSpace(touch->getLocation());
@@ -217,8 +218,8 @@ bool GameScene::onTouchBegan(Touch *touch, Event *unused_event){
             }else{
                 if (rectError.containsPoint(loc)) {
                     isHit = true;
-                    GameController::getInstance()->playSoundEffect("error_piano.m4a", false);
                     block->beTaped(true,Color4F::RED);
+                    
                     gameOver(GAME_TAP_MISTAKE);
                     break;
                 }
@@ -381,9 +382,7 @@ void GameScene::update(float dt){
     checkPosition(dt);
     
     checkOver(dt);
-    
-    
-    
+
 }
 
 void GameScene::updateTargetUI(float dt){
@@ -478,7 +477,7 @@ void GameScene::resetGame(){
     _gameOverDialogUINode->removeFromParentAndCleanup(false);
     showModelList(true);
     _startLabel->setVisible(true);
-    
+//    this->setColor(Color3B(Color4B(133,213,98,255)));
     
     updateTargetUI(0);
 }
@@ -739,9 +738,10 @@ void GameScene::moveForTap(float offset){
 }
 
 void GameScene::moveForBack(){
-    _curOffset -= _blockSize.height;
-    auto action = MoveTo::create(.12f, Vec2(_blockLayer->getPositionX(),_curOffset));
-    _blockLayer->runAction(EaseIn::create(action, 1.0f));
+//    this->setColor(Color3B::WHITE);
+//    _curOffset -= _blockSize.height;
+    auto action = MoveTo::create(.1f, Vec2(_blockLayer->getPositionX(),_blockLayer->getPositionY()+_blockSize.height));
+    _blockLayer->runAction(action);
 }
 
 void GameScene::move(float dt){
@@ -803,12 +803,33 @@ void GameScene::gameOver(GAME_RESULT result){
     unscheduleUpdate();
     calculateResult();
     _result = result;
-    showGameOverUI(result);
+    
+
     if(result == GAME_TAP_MISTAKE){
-        
-    }else{
+        GameController::getInstance()->playSoundEffect("error_piano.m4a", false);
+
+        this->runAction(Sequence::create(
+                                         DelayTime::create(0.7f),
+                                         CallFunc::create([result,this](){
+            showGameOverUI(result);
+            
+        }),NULL));
+    }else if(result == GAME_SUCCESS){
+        showGameOverUI(result);
         GameController::getInstance()->gameOver(result);
+    }else{
+        GameController::getInstance()->playSoundEffect("error_piano.m4a", false);
+
+        moveForBack();
+        this->runAction(Sequence::create(
+                                         DelayTime::create(0.6f),
+                                         CallFunc::create([result,this](){
+            showGameOverUI(result);
+            GameController::getInstance()->gameOver(result);
+            
+        }),NULL));
     }
+    
     
 //    this->runAction(Sequence::create(CallFunc::create([this,result](){
 //        
