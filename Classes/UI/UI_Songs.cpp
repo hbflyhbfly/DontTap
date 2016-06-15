@@ -78,6 +78,7 @@ void UI_Songs::touchEvent(Ref *pSender, Widget::TouchEventType type){
                 GameController::getInstance()->setPlayMode(!GameController::getInstance()->getPlayMode());
                 updateUI();
             }
+            GameController::getInstance()->playSoundForClick();
         }
             break;
             

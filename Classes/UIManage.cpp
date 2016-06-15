@@ -81,8 +81,10 @@ void UIManage::showUI(GAME_UI uiType,bool isAdd){
     }else{
         
     }
+    if(!_uiMap.find(uiType)->second->getParent()){
+        scene->addChild(_uiMap.find(uiType)->second);
+    }
     
-    scene->addChild(_uiMap.find(uiType)->second);
     
     if (uiType == UI_SONGS_) {
         auto ui = dynamic_cast<UI_Songs*>(_uiMap.find(uiType)->second);
@@ -110,7 +112,9 @@ void UIManage::showUIToScene(GAME_UI uiType,Scene* scene,bool isAdd){
             }
         }
     }
-    scene->addChild(_uiMap.find(uiType)->second);
+    if(!_uiMap.find(uiType)->second->getParent()){
+        scene->addChild(_uiMap.find(uiType)->second);
+    }
     
     if (uiType == UI_SONGS_) {
         auto ui = dynamic_cast<UI_Songs*>(_uiMap.find(uiType)->second);

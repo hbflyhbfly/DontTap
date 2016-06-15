@@ -21,6 +21,8 @@ public:
     
     void hideBanner();
     
+    void releaseBanner();
+    
     void showInterstitial();
     
     void incentivized();

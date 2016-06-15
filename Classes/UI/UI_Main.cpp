@@ -48,7 +48,7 @@ bool UI_Main::init(){
             if (tag == 8) {//more
                 
             }else if(tag == 9){//songs
-                UIManage::getInstance()->showUI(UI_SONGS_, false);
+                UIManage::getInstance()->showUI(UI_SONGS_, true);
 
             }else if(tag == 7){
                 gameController->startGame(GameController::getInstance()->getRandomGame(),true);

@@ -283,36 +283,32 @@ const std::vector<int> GameController::getMusicVec(int index){
     rapidjson::Value musics(rapidjson::kArrayType);
     getCanUseMusic(musics);
     
-    int n = musics.Size();
-    
-    if (index < n) {
-        rapidjson::Value& arrayValue = musics[index];
-        std::string str = arrayValue["music"].GetString();
-        int start = arrayValue["scale_start"].GetInt();
-        log("music:%s",arrayValue["tid"].GetString());
-        hy_function::instance()->splite_string_to_vec(str.c_str(), monosyllable,'#');
-        for (auto key:monosyllable) {
-            int octave = 0;
-            int i = 0;
-            std::string str = &key[0];
-            int num = (int)::atoi(str.c_str());
-            while (i < key.size()) {
-                if(key.find_first_of('+',i) != std::string::npos){
-                    octave += 1;
-                }
-                if(key.find_first_of('-',i) != std::string::npos){
-                    octave -= 1;
-                }
-                i++;
+    rapidjson::Value& arrayValue = musics[index];
+    std::string str = arrayValue["music"].GetString();
+    int start = arrayValue["scale_start"].GetInt();
+    log("music:%s",arrayValue["tid"].GetString());
+    hy_function::instance()->splite_string_to_vec(str.c_str(), monosyllable,'#');
+    for (auto key:monosyllable) {
+        int octave = 0;
+        int i = 0;
+        std::string str = &key[0];
+        int num = (int)::atoi(str.c_str());
+        while (i < key.size()) {
+            if(key.find_first_of('+',i) != std::string::npos){
+                octave += 1;
             }
-            if (num != 0) {
-                
-                music.push_back(start + octave*12 + KEY[num-1]);
-            }else{
-                music.push_back(0);
+            if(key.find_first_of('-',i) != std::string::npos){
+                octave -= 1;
             }
-            
+            i++;
         }
+        if (num != 0) {
+            
+            music.push_back(start + octave*12 + KEY[num-1]);
+        }else{
+            music.push_back(0);
+        }
+        
     }
     
 //    std::vector<std::string> monosyllable;
@@ -352,20 +348,26 @@ const std::vector<int> GameController::getMusicVec(int index){
 void GameController::setMusic(){
     int index = getPlayIndex();
     
+    rapidjson::Value musics(rapidjson::kArrayType);
+    getCanUseMusic(musics);
+    int n = musics.Size();
+
     if (getPlayMode()) {
         index++;
-        getMusicVec(index++);
     }else{
-        rapidjson::Value musics(rapidjson::kArrayType);
-        getCanUseMusic(musics);
+        index = rand()%n;
         
-        index = rand()%musics.Size();
-        
+    }
+    
+    if(index >= n){
+        index = 0;
     }
     _curMusicVec = getMusicVec(index);
     _curMusicIndex = 0;
     if (_curMusicVec.size()>0) {
         setPlayIndex(index);
+    }else{
+        setPlayIndex(0);
     }
 }
 

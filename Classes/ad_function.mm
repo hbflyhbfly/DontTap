@@ -102,6 +102,10 @@ void ad_function::hideBanner(){
     AdsmogoBanner::sharedBanner()->hidenBanner();
 }
 
+void ad_function::releaseBanner(){
+    AdsmogoBanner::sharedBanner()->releaseBanner();
+}
+
 void ad_function::showVideo(){
     [HZVideoAd fetchWithCompletion:^(BOOL result, NSError *error) {
         if (result) {
