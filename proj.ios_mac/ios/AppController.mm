@@ -29,6 +29,8 @@
 #import "RootViewController.h"
 #import <HeyzapAds/HeyzapAds.h>
 #import "GameConst.h"
+#import "GameCenterManage.h"
+
 @implementation AppController
 
 #pragma mark -
@@ -38,7 +40,9 @@
 static AppDelegate s_sharedApplication;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {    
-
+    
+//    [[GameCenterManage sharedInstance] authenticateLocalPlayer];
+    
     [HeyzapAds startWithPublisherID: Heyzap_Key];
     
 //    [HeyzapAds presentMediationDebugViewController];

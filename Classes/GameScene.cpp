@@ -166,6 +166,7 @@ void GameScene::touchEvent(Ref *pSender, Widget::TouchEventType type){
             }else if(name == "over_btn"){
 //                GameController::getInstance()->toScene(MAIN_SCENE);
                 showGameOverUI(GAME_FAIL);
+                GameController::getInstance()->gameOver(_result);
             }else if(name == "share_btn"){
                 
             }else if(name == "back_btn"){
@@ -1018,9 +1019,16 @@ void GameScene::updateResultUI(){
     auto scoreText = dynamic_cast<TextBMFont*>(_gameOverUINode->getChildByName("Panel")->getChildByName("result_score"));
     auto scoreText_1 = dynamic_cast<TextBMFont*>(_gameOverUINode->getChildByName("Panel")->getChildByName("result_score_1"));
     
+    auto noteFly = _gameOverUINode->getChildByName("Panel")->getChildByName("note_fly");
+    
+    if(_tabedBlockCount > 0){
+        auto flyToken = dynamic_cast<TextBMFont*>(noteFly->getChildByName("token_count"));
+        flyToken->setString(StringUtils::format("%d",_tabedBlockCount));
+    }
+    
     
     int tokenCount = GameController::getInstance()->getUserData("token", DATA_INT).GetInt();
-    token->setString(StringUtils::format("%d",tokenCount - _tabedBlockCount > 0?tokenCount - _tabedBlockCount:0));
+    token->setString(StringUtils::format("%d",tokenCount));
     rapidjson::Value gameData;
     GameController::getInstance()->getGameData(GameController::getInstance()->getGameId(), gameData);
     
