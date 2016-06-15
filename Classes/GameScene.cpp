@@ -924,7 +924,7 @@ void GameScene::showGameOverUI(GAME_RESULT result){
 }
 void GameScene::showDone(){
     
-    GAME_RESULT result = GameController::getInstance()->isGameOver();
+//    GAME_RESULT result = GameController::getInstance()->isGameOver();
     auto noteFly = _gameOverUINode->getChildByName("Panel")->getChildByName("note_fly");
 
     if(_tabedBlockCount > 0){
@@ -949,7 +949,7 @@ void GameScene::showDone(){
     _gameOverAction->clearLastFrameCallFunc();
     _gameOverDialogAction->clearLastFrameCallFunc();
     
-    switch (result) {
+    switch (_result) {
         case GAME_SUCCESS:
             if(!_gameOverUINode->getParent()){
                 this->addChild(_gameOverUINode);
@@ -992,8 +992,7 @@ void GameScene::showDone(){
 }
 
 void GameScene::dialogShowDone(){
-    GAME_RESULT result = GameController::getInstance()->isGameOver();
-    switch (result) {
+    switch (_result) {
 //        case GAME_SUCCESS:
 //            if(!_gameOverUINode->getParent()){
 //                this->addChild(_gameOverUINode);
