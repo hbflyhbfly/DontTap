@@ -19,6 +19,8 @@
 
 #include "GameController.hpp"
 
+#include "cocos2d.h"
+
 
 #define LOG_METHOD_NAME_TO_CONSOLE_WITH_STRING(str) [self logToConsole:[NSString stringWithFormat:@"%@ %@", NSStringFromSelector(_cmd), str]]
 
@@ -109,7 +111,9 @@ void ad_function::releaseBanner(){
 void ad_function::showVideo(){
     [HZVideoAd fetchWithCompletion:^(BOOL result, NSError *error) {
         if (result) {
-            [HZVideoAd show];
+            if(!GameController::getInstance()->isIngame()){
+                [HZVideoAd show];
+            }
         }
     }];
     
@@ -119,7 +123,9 @@ void ad_function::showVideo(){
 void ad_function::showInterstitial(){
     [HZInterstitialAd fetchWithCompletion:^(BOOL result, NSError *error) {
         if (result) {
-            [HZInterstitialAd show];
+            if(!GameController::getInstance()->isIngame()){
+                [HZInterstitialAd show];
+            }
         }
     }];
 }

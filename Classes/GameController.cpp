@@ -29,7 +29,8 @@ _gameSubType(GAME_SUBTYPE_NONE),
 _curMusicIndex(0),
 _doc(nullptr),
 _gameCount(0),
-_gameIndex(0)
+_gameIndex(0),
+_isIngame(false)
 {
     
 }
@@ -126,6 +127,7 @@ void GameController::startGame(const std::string& gameId,bool isReplace){
         _gameScene->restartGame();
     }
     _over = GAME_NONE;
+    _isIngame = true;
 }
 
 void GameController::startAgain(){
@@ -284,10 +286,10 @@ const std::vector<int> GameController::getMusicVec(int index){
     getCanUseMusic(musics);
     
     rapidjson::Value& arrayValue = musics[index];
-    std::string str = arrayValue["music"].GetString();
+    std::string musicStr = arrayValue["music"].GetString();
     int start = arrayValue["scale_start"].GetInt();
     log("music:%s",arrayValue["tid"].GetString());
-    hy_function::instance()->splite_string_to_vec(str.c_str(), monosyllable,'#');
+    hy_function::instance()->splite_string_to_vec(musicStr.c_str(), monosyllable,'#');
     for (auto key:monosyllable) {
         int octave = 0;
         int i = 0;
@@ -404,6 +406,10 @@ std::string GameController::getRandomGame(){
 }
 
 void GameController::gameOver(GAME_RESULT result){
+    
+    _isIngame = false;
+    _over = result;
+    
     addToken(_gameScene->getTapedBlock());
     if(_gameType == GAME_TYPE_CLASSICS){
         if (result == GAME_SUCCESS || result == GAME_OVER) {
@@ -417,7 +423,7 @@ void GameController::gameOver(GAME_RESULT result){
         }
     }
     umeng::MobClickCpp::finishLevel(_gameId.c_str());
-    _over = result;
+    
     
     if(_gameIndex == 0){
         _gameIndex = hy_function::instance()->randomFrom(1,5);

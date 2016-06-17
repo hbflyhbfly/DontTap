@@ -136,6 +136,8 @@ void UI_Songs::tableCellTouched(TableView* table, TableViewCell* cell)
         GameController::getInstance()->buyMusic(music["id"].GetString());
     }
     table->updateCellAtIndex(cell->getIdx());
+    
+    UIManage::getInstance()->updateUI(UI_SONGS_);
 }
 
 Size UI_Songs::tableCellSizeForIndex(TableView *table, ssize_t idx)

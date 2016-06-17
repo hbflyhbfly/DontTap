@@ -39,7 +39,7 @@ _speedChange(0),
 _timeIndex(0),
 _cellIndex(0),
 _result(GAME_NONE),
-_continueToken(100){
+_continueToken(200){
     
 }
 
@@ -472,7 +472,7 @@ void GameScene::resetGame(){
     _unUsingBlocks.clear();
     _blockLayer->setPositionY(0);
     _curOffset = _blockLayer->getPositionY();
-    _continueToken = 100;
+    _continueToken = 200;
     _gameOverUINode->removeFromParentAndCleanup(false);
     _gameOverDialogUINode->removeFromParentAndCleanup(false);
     showModelList(true);

@@ -36,7 +36,6 @@ bool UI_Dialog::init(){
         return false;
     }
     
-    
     _uiNode = CSLoader::getInstance()->createNode("ui/Dialog.csb");
     _action = CSLoader::getInstance()->createTimeline("ui/Dialog.csb");
 //    _action->retain();

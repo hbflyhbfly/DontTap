@@ -159,6 +159,7 @@ public:
     bool getPlayMode();
     int setPlayIndex(int index);
     int getPlayIndex();
+    bool isIngame(){return _isIngame;};
 private:
     GAME_RESULT _over;
     
@@ -179,6 +180,8 @@ private:
     GameScene* _gameScene;
     int _gameCount;
     int _gameIndex;
+    
+    bool _isIngame;
 };
 #endif /* GameController_hpp */
 
