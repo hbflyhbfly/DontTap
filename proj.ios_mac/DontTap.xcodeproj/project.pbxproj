@@ -12,6 +12,7 @@
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		288765A50DF7441C002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765A40DF7441C002DB57D /* CoreGraphics.framework */; };
+		2B22A9311D15B2DC0092AE22 /* local.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2B22A9331D15B2DC0092AE22 /* local.strings */; };
 		2B3B73BA1D069F520080A07F /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B3B73B91D069F520080A07F /* Accelerate.framework */; };
 		2B3B73BC1D069F5F0080A07F /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B3B73BB1D069F5F0080A07F /* CoreText.framework */; };
 		2B3B73BE1D069F680080A07F /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B3B73BD1D069F680080A07F /* AudioToolbox.framework */; };
@@ -360,6 +361,8 @@
 		1D6058910D05DD3D006BFB54 /* DontTap-mobile.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "DontTap-mobile.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		288765A40DF7441C002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		2B22A9321D15B2DC0092AE22 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/local.strings; sourceTree = "<group>"; };
+		2B22A9341D15B5760092AE22 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/local.strings"; sourceTree = "<group>"; };
 		2B3B73001D069E760080A07F /* GameConst.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameConst.h; sourceTree = "<group>"; };
 		2B3B73B91D069F520080A07F /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.3.sdk/System/Library/Frameworks/Accelerate.framework; sourceTree = DEVELOPER_DIR; };
 		2B3B73BB1D069F5F0080A07F /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.3.sdk/System/Library/Frameworks/CoreText.framework; sourceTree = DEVELOPER_DIR; };
@@ -895,6 +898,7 @@
 				503AE0FE17EB989F00D1A890 /* RootViewController.h */,
 				503AE0FF17EB989F00D1A890 /* RootViewController.mm */,
 				2BB8EBF41D0FDC7200DD2335 /* Images.xcassets */,
+				2B22A9331D15B2DC0092AE22 /* local.strings */,
 			);
 			name = ios;
 			path = Classes;
@@ -1769,6 +1773,7 @@
 				Japanese,
 				French,
 				German,
+				"zh-Hans",
 			);
 			mainGroup = 29B97314FDCFA39411CA2CEA /* CustomTemplate */;
 			projectDirPath = "";
@@ -1962,6 +1967,7 @@
 				2BB8EBF51D0FDC7200DD2335 /* Images.xcassets in Resources */,
 				2BDFB6881D117170003E2E61 /* admogoVideo_11.png in Resources */,
 				3EACC98F19EE6D4300EB3C5E /* res in Resources */,
+				2B22A9311D15B2DC0092AE22 /* local.strings in Resources */,
 				2BDFB6BC1D117170003E2E61 /* adsmogo_fsclosebtn.png in Resources */,
 				2BDFB6C41D117170003E2E61 /* adsmogo_bannerbg@2x.png in Resources */,
 				2B3B79711D07F3CB0080A07F /* UnityAds.bundle in Resources */,
@@ -2084,11 +2090,26 @@
 		};
 /* End PBXTargetDependency section */
 
+/* Begin PBXVariantGroup section */
+		2B22A9331D15B2DC0092AE22 /* local.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				2B22A9321D15B2DC0092AE22 /* en */,
+				2B22A9341D15B5760092AE22 /* zh-Hans */,
+			);
+			name = local.strings;
+			path = ios;
+			sourceTree = SOURCE_ROOT;
+		};
+/* End PBXVariantGroup section */
+
 /* Begin XCBuildConfiguration section */
 		1D6058940D05DD3E006BFB54 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer: Xinxin Cai (84X8SU83SP)";
 				COMPRESS_PNG_FILES = NO;
@@ -2183,7 +2204,7 @@
 					"-ObjC",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.jiwei.bcbk;
-				PROVISIONING_PROFILE = "46eeb472-4962-4dff-bc29-2b0713284fab";
+				PROVISIONING_PROFILE = "9bc76924-2a48-4027-9de8-77b975f51be3";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "$(_COCOS_HEADER_IOS_BEGIN) $(_COCOS_HEADER_IOS_END)";
@@ -2195,6 +2216,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer: Xinxin Cai (84X8SU83SP)";
 				COMPRESS_PNG_FILES = NO;
@@ -2287,7 +2310,7 @@
 					"-ObjC",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.jiwei.bcbk;
-				PROVISIONING_PROFILE = "46eeb472-4962-4dff-bc29-2b0713284fab";
+				PROVISIONING_PROFILE = "9bc76924-2a48-4027-9de8-77b975f51be3";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "$(_COCOS_HEADER_IOS_BEGIN) $(_COCOS_HEADER_IOS_END)";
@@ -2389,7 +2412,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "46eeb472-4962-4dff-bc29-2b0713284fab";
+				PROVISIONING_PROFILE = "9bc76924-2a48-4027-9de8-77b975f51be3";
 				SDKROOT = macosx;
 			};
 			name = Debug;
@@ -2422,7 +2445,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "46eeb472-4962-4dff-bc29-2b0713284fab";
+				PROVISIONING_PROFILE = "9bc76924-2a48-4027-9de8-77b975f51be3";
 				SDKROOT = macosx;
 				VALIDATE_PRODUCT = YES;
 			};

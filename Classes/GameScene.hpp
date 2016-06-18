@@ -134,6 +134,7 @@ private:
     int _cellIndex;
     GAME_RESULT _result;
     int _continueToken;
+    int _targetForRelay;
     
 };
 #endif /* GameScene_hpp */

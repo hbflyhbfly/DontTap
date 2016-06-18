@@ -39,7 +39,8 @@ _speedChange(0),
 _timeIndex(0),
 _cellIndex(0),
 _result(GAME_NONE),
-_continueToken(200){
+_continueToken(200),
+_targetForRelay(0){
     
 }
 
@@ -461,6 +462,7 @@ void GameScene::resetGame(){
     _speedBuf = 0;
     _gameTime = 0.0f;
     _tabedBlockCount = 0;
+    _targetForRelay = 0;
     _gameResult = 0;
     _specialIndex = 10;
     _timeBlock = 3.0f;
@@ -493,6 +495,7 @@ void GameScene::tap(BlockSprite* block){
     block->beTaped(false,Color4F::GRAY);
     if (block->canTap() && block->isTaped()) {
         _tabedBlockCount ++;
+        _targetForRelay ++;
         if (GameController::getInstance()->getType() == GAME_TYPE_RELAY) {
             if (_tabedBlockCount >= GameController::getInstance()->getTargetCount()&&GameController::getInstance()->getTimeLimit()-_gameTime >= 0) {
                 _gameTime -= GameController::getInstance()->getTimeLimit();
@@ -877,7 +880,7 @@ void GameScene::calculateResult(){
         _gameResult = _speedBuf;
         
     }else if(type == GAME_TYPE_RELAY){
-        _gameResult = _tabedBlockCount;
+        _gameResult = _targetForRelay;
     }
 
 }
