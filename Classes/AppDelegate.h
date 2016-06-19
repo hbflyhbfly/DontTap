@@ -11,6 +11,7 @@ The reason for implement as private inheritance is to hide some interface call b
 class  AppDelegate : private cocos2d::Application
 {
 public:
+    
     AppDelegate();
     virtual ~AppDelegate();
 
@@ -34,6 +35,8 @@ public:
     @param  the pointer of the application
     */
     virtual void applicationWillEnterForeground();
+    
+
 };
 
 #endif // _APP_DELEGATE_H_

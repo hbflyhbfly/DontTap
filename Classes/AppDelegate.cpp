@@ -1,12 +1,21 @@
 #include "AppDelegate.h"
 #include "MainScene.hpp"
+#include "MobClickCpp.h"
+#include "GameConst.h"
+#include "ad_function.h"
+#include "GameController.hpp"
 
 USING_NS_CC;
 
-static cocos2d::Size designResolutionSize = cocos2d::Size(640, 960);
+static cocos2d::Size designResolutionSize = cocos2d::Size(750, 1334);
+
 static cocos2d::Size smallResolutionSize = cocos2d::Size(480, 320);
 static cocos2d::Size mediumResolutionSize = cocos2d::Size(1024, 768);
 static cocos2d::Size largeResolutionSize = cocos2d::Size(2048, 1536);
+
+//static cocos2d::Size smallResolutionSize = cocos2d::Size(320,480);
+//static cocos2d::Size mediumResolutionSize = cocos2d::Size(768, 1024);
+//static cocos2d::Size largeResolutionSize = cocos2d::Size(1536, 2048);
 
 AppDelegate::AppDelegate() {
 
@@ -35,6 +44,10 @@ static int register_all_packages()
 }
 
 bool AppDelegate::applicationDidFinishLaunching() {
+    //umeng
+    MOBCLICKCPP_START_WITH_APPKEY(Umeng_Key);
+    
+    
     // initialize director
     auto director = Director::getInstance();
     auto glview = director->getOpenGLView();
@@ -48,7 +61,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
     }
 
     // turn on display FPS
-    director->setDisplayStats(true);
+    director->setDisplayStats(false);
 
     // set FPS. the default value is 1.0/60 if you don't call this
     director->setAnimationInterval(1.0 / 60);
@@ -68,34 +81,46 @@ bool AppDelegate::applicationDidFinishLaunching() {
     }
     // if the frame's height is smaller than the height of medium size.
     else
-    {        
+    {
         director->setContentScaleFactor(MIN(smallResolutionSize.height/designResolutionSize.height, smallResolutionSize.width/designResolutionSize.width));
     }
 
     register_all_packages();
-    FileUtils::getInstance()->setDefaultResourceRootPath("Resources");
+    FileUtils::getInstance()->addSearchPath("Resources");
+    
+    GameController::getInstance()->initUser();
     
     // create a scene. it's an autorelease object
     auto scene = MainScene::createScene();
 
     // run
     director->runWithScene(scene);
-
+    
+    ad_function::instance()->prepareBanner();
+    
     return true;
 }
+
 
 // This function will be called when the app is inactive. When comes a phone call,it's be invoked too
 void AppDelegate::applicationDidEnterBackground() {
     Director::getInstance()->stopAnimation();
-
+    
     // if you use SimpleAudioEngine, it must be pause
     // SimpleAudioEngine::getInstance()->pauseBackgroundMusic();
+    
+    //umeng
+    umeng::MobClickCpp::applicationDidEnterBackground();
 }
 
 // this function will be called when the app is active again
 void AppDelegate::applicationWillEnterForeground() {
     Director::getInstance()->startAnimation();
-
+//    ad_function::instance()->releaseBanner();
+//    ad_function::instance()->prepareBanner();
+    ad_function::instance()->hideBanner();
     // if you use SimpleAudioEngine, it must resume here
     // SimpleAudioEngine::getInstance()->resumeBackgroundMusic();
+    
+    umeng::MobClickCpp::applicationWillEnterForeground();
 }

@@ -8,13 +8,19 @@
 #include "MainScene.hpp"
 #include "cocostudio/CocoStudio.h"
 #include "ui/UIButton.h"
+#include "ui/UIText.h"
 #include "GameScene.hpp"
+#include "GameController.hpp"
+#include "ad_function.h"
+
+#include "UIManage.hpp"
+
 USING_NS_CC;
 using namespace cocostudio;
 using namespace ui;
 
-MainScene::MainScene():
-_uiNode(nullptr)
+MainScene::MainScene()
+//_uiNode(nullptr)
 {
     
 }
@@ -28,38 +34,70 @@ bool MainScene::init(){
     if (!Layer::init()) {
         return false;
     }
-    _uiNode = CSLoader::getInstance()->createNode("ui/MainScene.csb");
-    Node* n = CSLoader::getInstance()->createNode("ui/eff_gates_0002.csb");
     
-    timeline::ActionTimeline* timeline1 = CSLoader::getInstance()->createTimeline("ui/eff_gates_0002.csb");
-    timeline1->play("eff_gates_0002_idle", true);
-    n->runAction(timeline1);
+//    _uiNode = CSLoader::getInstance()->createNode("ui/MainScene.csb");
+//    this->addChild(_uiNode);
     
-    n->setPosition(Vec2(300,500));
-    _uiNode->addChild(n);
-//    Armature* arm = dynamic_cast<Armature*>(_uiNode->getChildByName("ArmatureNode_1"));
-//    arm->getAnimation()->play("eff_gates_0002_idle");
-    timeline::ActionTimeline* timeline = CSLoader::getInstance()->createTimeline("ui/MainScene.csb");
-    timeline->play("idel", true);
-    _uiNode->runAction(timeline);
-    
-    Button* startButton = dynamic_cast<Button*>(_uiNode->getChildByName("start_button"));
-    auto callback = [this](Ref* ref){
-        auto gameScene = GameScene::createScene();
-        Director::getInstance()->replaceScene(gameScene);
-    };
-    startButton->addClickEventListener(callback);
+//    timeline::ActionTimeline* timeline = CSLoader::getInstance()->createTimeline("ui/MainScene.csb");
+//    timeline->play("idel", true);
+//    _uiNode->runAction(timeline);
+//    GameController::getInstance()->getGameData("Classic_25");
+
+//    for (int i = 1; i<=9; i++) {
+//        Layout* startButton = dynamic_cast<Layout*>(_uiNode->getChildByTag(i));
+//        GameController* gameController = GameController::getInstance();
+//        auto callback = [this,gameController](Ref* ref){
+//            auto lay = dynamic_cast<Layout*>(ref);
+//            int tag = lay->getTag();
+//            if (tag == 8) {//more
+//                
+//            }else if(tag == 9){//songs
+//                UIManage::getInstance()->showUI(UI_SONGS, false);
+//
+//            }else if(tag == 7){
+//                gameController->startGame(GameController::getInstance()->getRandomGame(),true);
+//            }else{
+//                GAME_TYPE gameType = (GAME_TYPE)tag;
+//                rapidjson::Value group(rapidjson::kArrayType);
+//                gameController->getGroupWithType(gameType, group);
+//                rapidjson::Value& data = group[0];
+//                
+//                gameController->startGame(data["id"].GetString(),true);
+//            }
+//            GameController::getInstance()->playSoundForClick();
+//        };
+//        startButton->addClickEventListener(callback);
+//
+//    }
     return true;
 }
 
 Scene* MainScene::createScene(){
     auto scene = Scene::create();
-    auto layer = MainScene::create();
-    scene->addChild(layer);
+    UIManage::getInstance()->showUIToScene(UI_MAIN_, scene, true);
     return scene;
 }
 
 void MainScene::onEnter(){
     Layer::onEnter();
-    this->addChild(_uiNode);
+//    Sprite* s =Sprite::create("res/button_startCN1.png");
+//    s->setPosition(300,500);
+//    
+//    auto action = MoveTo::create(2, Vec2(300,800));
+//    s->runAction(EaseBackOut::create(action));
+//    this->addChild(s);
+    
+    
+//    GameController::getInstance()->updateLanguage(_uiNode);
+
+//    updateUI();
+
+    ad_function::instance()->hideBanner();
 }
+
+//void MainScene::updateUI(){
+//    auto n = _uiNode->getChildByName("Panel_5");
+//    auto token = dynamic_cast<Text*>(n->getChildByName("token_text"));
+//    int count = GameController::getInstance()->getUserData("token", DATA_INT).GetInt();
+//    token->setString(StringUtils::format("%d",count));
+//}
