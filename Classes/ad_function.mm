@@ -92,6 +92,8 @@ ad_function* ad_function::instance()
 void ad_function::prepareBanner(){
     AdsmogoBanner::sharedBanner()->createBanner(Mogo_Key,AdsmogoBannerTypeNormalBanner,
                                                 AdMoGoPointTypeDown_middle,false);
+    
+    
     hideBanner();
     
 }

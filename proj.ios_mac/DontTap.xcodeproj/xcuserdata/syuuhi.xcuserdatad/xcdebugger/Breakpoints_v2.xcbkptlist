@@ -1990,7 +1990,7 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../Classes/GameController.cpp"
@@ -2406,7 +2406,7 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../Classes/GameController.cpp"
@@ -2422,7 +2422,7 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../Classes/GameController.cpp"
@@ -2435,34 +2435,34 @@
             landmarkType = "5">
             <Locations>
                <Location
-                  shouldBeEnabled = "Yes"
+                  shouldBeEnabled = "No"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
                   symbolName = "GameController::getMusicVec(int)"
                   moduleName = "DontTap-mobile"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/syuuhi/Development/Code/MoneyProject/DontTap/Classes/GameController.cpp"
-                  timestampString = "487829292.862965"
+                  timestampString = "488040923.478278"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "293"
                   endingLineNumber = "293"
-                  offsetFromSymbolStart = "832">
+                  offsetFromSymbolStart = "1267">
                </Location>
                <Location
-                  shouldBeEnabled = "Yes"
+                  shouldBeEnabled = "No"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
                   symbolName = "GameController::getMusicVec(int)"
                   moduleName = "DontTap-mobile"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/syuuhi/Development/Code/MoneyProject/DontTap/Classes/GameController.cpp"
-                  timestampString = "487829292.863129"
+                  timestampString = "488040923.478466"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
                   startingLineNumber = "293"
                   endingLineNumber = "293"
-                  offsetFromSymbolStart = "1096">
+                  offsetFromSymbolStart = "1670">
                </Location>
             </Locations>
          </BreakpointContent>
@@ -2470,7 +2470,7 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../Classes/GameController.cpp"
@@ -2480,6 +2480,38 @@
             startingLineNumber = "300"
             endingLineNumber = "300"
             landmarkName = "GameController::getMusicVec(int index)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "utils/utils/AdsmogoBanner.mm"
+            timestampString = "488088563.882892"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "277"
+            endingLineNumber = "277"
+            landmarkName = "AdsmogoBanner::hidenBanner()"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "utils/utils/AdsmogoBanner.mm"
+            timestampString = "488088563.882892"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "100"
+            endingLineNumber = "100"
+            landmarkName = "-showAdsMogobanner"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

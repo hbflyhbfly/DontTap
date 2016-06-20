@@ -44,7 +44,15 @@
         [self hideBanner];
     }
     //普通初始化方式
-    adbanner= [[AdMoGoView alloc] initWithAppKey:mogoid adType:type   adMoGoViewDelegate:self adViewPointType:pointType isManualRefresh:ismanualrefresh];
+//    adbanner= [[AdMoGoView alloc] initWithAppKey:mogoid adType:type   adMoGoViewDelegate:self adViewPointType:pointType isManualRefresh:ismanualrefresh];
+    
+    
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+        adbanner= [[AdMoGoView alloc] initWithAppKey:mogoid adType:type   adMoGoViewDelegate:self adViewPointType:pointType isManualRefresh:ismanualrefresh];
+    }else{
+        adbanner= [[AdMoGoView alloc] initWithAppKey:mogoid adType:AdViewTypeLargeBanner   adMoGoViewDelegate:self adViewPointType:pointType isManualRefresh:ismanualrefresh];
+    }
+    [adbanner setAutoScale:YES];
     //手动轮换广告初始化方式  isManualRefresh   YES :手动刷新  NO：自动刷新   设置isManualRefresh参数时候必须将芒果后台的刷新禁用才可使用。
 //     adbanner= [[AdMoGoView alloc] initWithAppKey:mogoid adType:type adMoGoViewDelegate:self adViewPointType:AdMoGoViewPointTypeTop_middle isManualRefresh:YES];
     [self showMogoLog];

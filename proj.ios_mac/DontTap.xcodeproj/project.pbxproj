@@ -13,6 +13,7 @@
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		288765A50DF7441C002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765A40DF7441C002DB57D /* CoreGraphics.framework */; };
 		2B22A9311D15B2DC0092AE22 /* local.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2B22A9331D15B2DC0092AE22 /* local.strings */; };
+		2B22A93B1D17C3030092AE22 /* UTDID.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B22A93A1D17C3030092AE22 /* UTDID.framework */; };
 		2B3B73BA1D069F520080A07F /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B3B73B91D069F520080A07F /* Accelerate.framework */; };
 		2B3B73BC1D069F5F0080A07F /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B3B73BB1D069F5F0080A07F /* CoreText.framework */; };
 		2B3B73BE1D069F680080A07F /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B3B73BD1D069F680080A07F /* AudioToolbox.framework */; };
@@ -363,6 +364,7 @@
 		288765A40DF7441C002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		2B22A9321D15B2DC0092AE22 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/local.strings; sourceTree = "<group>"; };
 		2B22A9341D15B5760092AE22 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/local.strings"; sourceTree = "<group>"; };
+		2B22A93A1D17C3030092AE22 /* UTDID.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = UTDID.framework; sourceTree = "<group>"; };
 		2B3B73001D069E760080A07F /* GameConst.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameConst.h; sourceTree = "<group>"; };
 		2B3B73B91D069F520080A07F /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.3.sdk/System/Library/Frameworks/Accelerate.framework; sourceTree = DEVELOPER_DIR; };
 		2B3B73BB1D069F5F0080A07F /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.3.sdk/System/Library/Frameworks/CoreText.framework; sourceTree = DEVELOPER_DIR; };
@@ -717,7 +719,6 @@
 		2BDFB6441D117170003E2E61 /* AdMoGoAdSDKVideoNetworkRegistry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AdMoGoAdSDKVideoNetworkRegistry.h; sourceTree = "<group>"; };
 		2BDFB6451D117170003E2E61 /* AdMoGoAppUpdateRemind.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AdMoGoAppUpdateRemind.h; sourceTree = "<group>"; };
 		2BDFB6461D117170003E2E61 /* AdMoGoAppUpdateRemindDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AdMoGoAppUpdateRemindDelegate.h; sourceTree = "<group>"; };
-		2BDFB6471D117170003E2E61 /* AdMoGoClassWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AdMoGoClassWrapper.h; sourceTree = "<group>"; };
 		2BDFB6481D117170003E2E61 /* AdMoGoConfigData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AdMoGoConfigData.h; sourceTree = "<group>"; };
 		2BDFB6491D117170003E2E61 /* AdMoGoConfigDataCenter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AdMoGoConfigDataCenter.h; sourceTree = "<group>"; };
 		2BDFB64A1D117170003E2E61 /* AdMogoConfigDic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AdMogoConfigDic.h; sourceTree = "<group>"; };
@@ -820,6 +821,7 @@
 				2B3B73E61D06A04B0080A07F /* MapKit.framework in Frameworks */,
 				2B3B73E41D06A0410080A07F /* libz.1.2.5.tbd in Frameworks */,
 				2B3B73E21D06A0370080A07F /* ImageIO.framework in Frameworks */,
+				2B22A93B1D17C3030092AE22 /* UTDID.framework in Frameworks */,
 				2B3B73E01D06A02E0080A07F /* iAd.framework in Frameworks */,
 				2B3B73DE1D06A0270080A07F /* GameKit.framework in Frameworks */,
 				2B3B73DC1D06A01D0080A07F /* CoreVideo.framework in Frameworks */,
@@ -1561,6 +1563,7 @@
 		2BDFB6351D117170003E2E61 /* AdsMoGoSDK */ = {
 			isa = PBXGroup;
 			children = (
+				2B22A93A1D17C3030092AE22 /* UTDID.framework */,
 				2BDFB6361D117170003E2E61 /* AdMoGoAdAPIBannerNetworkRegistry.h */,
 				2BDFB6371D117170003E2E61 /* AdMoGoAdAPIInterstitialNetworkRegistry.h */,
 				2BDFB6381D117170003E2E61 /* AdMoGoAdAPISDKNetworkRegistry.h */,
@@ -1578,7 +1581,6 @@
 				2BDFB6441D117170003E2E61 /* AdMoGoAdSDKVideoNetworkRegistry.h */,
 				2BDFB6451D117170003E2E61 /* AdMoGoAppUpdateRemind.h */,
 				2BDFB6461D117170003E2E61 /* AdMoGoAppUpdateRemindDelegate.h */,
-				2BDFB6471D117170003E2E61 /* AdMoGoClassWrapper.h */,
 				2BDFB6481D117170003E2E61 /* AdMoGoConfigData.h */,
 				2BDFB6491D117170003E2E61 /* AdMoGoConfigDataCenter.h */,
 				2BDFB64A1D117170003E2E61 /* AdMogoConfigDic.h */,
@@ -2204,7 +2206,7 @@
 					"-ObjC",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.jiwei.bcbk;
-				PROVISIONING_PROFILE = "9bc76924-2a48-4027-9de8-77b975f51be3";
+				PROVISIONING_PROFILE = "46eeb472-4962-4dff-bc29-2b0713284fab";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "$(_COCOS_HEADER_IOS_BEGIN) $(_COCOS_HEADER_IOS_END)";
@@ -2310,7 +2312,7 @@
 					"-ObjC",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.jiwei.bcbk;
-				PROVISIONING_PROFILE = "9bc76924-2a48-4027-9de8-77b975f51be3";
+				PROVISIONING_PROFILE = "46eeb472-4962-4dff-bc29-2b0713284fab";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "$(_COCOS_HEADER_IOS_BEGIN) $(_COCOS_HEADER_IOS_END)";
@@ -2412,7 +2414,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "9bc76924-2a48-4027-9de8-77b975f51be3";
+				PROVISIONING_PROFILE = "46eeb472-4962-4dff-bc29-2b0713284fab";
 				SDKROOT = macosx;
 			};
 			name = Debug;
@@ -2445,7 +2447,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "9bc76924-2a48-4027-9de8-77b975f51be3";
+				PROVISIONING_PROFILE = "46eeb472-4962-4dff-bc29-2b0713284fab";
 				SDKROOT = macosx;
 				VALIDATE_PRODUCT = YES;
 			};
