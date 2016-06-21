@@ -169,6 +169,10 @@
     
 }
 
+- (CGSize)adMoGoCustomSize{
+    return CGSizeMake(500, 90);
+}
+
 
 #pragma AdMoGoWebBrowserControllerUserDelegate
 
@@ -259,7 +263,7 @@ void AdsmogoBanner::createBanner(char * mogoid,AdsmogoBannerType type, AdMoGoPoi
     //Set the advertising of the container
     auto view = cocos2d::Director::getInstance()->getOpenGLView();
     CCEAGLView *eaglview = (CCEAGLView *) view->getEAGLView();
-    
+//    [mogoBanner setContentScaleFactor:0.5f];
     [eaglview addSubview:mogoBanner];
     
 }

@@ -499,10 +499,8 @@
 	<string>继续赚取</string>
 	<key>No videos available, try again later</key>
 	<string>暂无视频资源，请稍后再试</string>
-	<key>Insufficient coins. Watch videos to earn coins</key>
-	<string>音乐币不足，可通过观看视频赚取音乐币</string>
-	<key>Insufficient Coins</key>
-	<string>音乐币不足</string>
+	<key>Insufficient coins</key>
+	<string>音乐币不足，可通过观看视频赚取音乐币!</string>
 	<key>Earn 500 coins for Free</key>
 	<string>免费赚取500音乐币</string>
 	<key>Installed successfully!</key>

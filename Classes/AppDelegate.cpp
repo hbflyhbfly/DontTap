@@ -118,7 +118,7 @@ void AppDelegate::applicationWillEnterForeground() {
     Director::getInstance()->startAnimation();
 //    ad_function::instance()->releaseBanner();
 //    ad_function::instance()->prepareBanner();
-    ad_function::instance()->hideBanner();
+//    ad_function::instance()->hideBanner();
     // if you use SimpleAudioEngine, it must resume here
     // SimpleAudioEngine::getInstance()->resumeBackgroundMusic();
     

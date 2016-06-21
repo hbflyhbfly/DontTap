@@ -28,7 +28,8 @@ typedef enum {
 
 typedef enum {
     DIALOG_AD_REWARD_,
-    DIALOG_SIGN_REWARD_
+    DIALOG_SIGN_REWARD_,
+    DIALOG_AD_WATCH_
 } DIALOG_TYPE;
 
 class UIManage:public cocos2d::Ref{

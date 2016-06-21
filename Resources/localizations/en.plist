@@ -457,10 +457,8 @@ It&apos;s recommended to use Popup in Arcade and Rush for avoiding unexpected to
 	<string>Keep earning</string>
 	<key>No videos available, try again later</key>
 	<string>No videos available, try again later</string>
-	<key>Insufficient coins. Watch videos to earn coins</key>
+	<key>Insufficient coins</key>
 	<string>Insufficient coins. Watch videos to earn coins</string>
-	<key>Insufficient Coins</key>
-	<string>Insufficient Coins</string>
 	<key>Earn 500 coins for Free</key>
 	<string>Earn 500 coins for Free</string>
 	<key>Installed successfully!</key>

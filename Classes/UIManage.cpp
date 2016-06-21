@@ -55,7 +55,19 @@ bool UIManage::init(){
 }
 
 void UIManage::showDialog(DIALOG_TYPE type,const std::string& str){
-    showUI(UI_DIALOG_, true);
+    
+    auto scene = Director::getInstance()->getRunningScene();
+    if(_uiMap.find(UI_DIALOG_) == _uiMap.end()){
+        createUI(UI_DIALOG_);
+    }
+    
+    if(!_uiMap.find(UI_DIALOG_)->second->getParent()){
+        scene->addChild(_uiMap.find(UI_DIALOG_)->second);
+    }
+    
+    auto ui = dynamic_cast<UI_Dialog*>(_uiMap.find(UI_DIALOG_)->second);
+    ui->showUI(type);
+    
     dynamic_cast<UI_Dialog*>(_uiMap.find(UI_DIALOG_)->second)->setStr(str,type);
     updateUI(UI_DIALOG_);
 }
@@ -92,9 +104,6 @@ void UIManage::showUI(GAME_UI uiType,bool isAdd){
     }else if(uiType == UI_MAIN_){
         auto ui = dynamic_cast<UI_Main*>(_uiMap.find(uiType)->second);
         ui->showUI();
-    }else if(uiType == UI_DIALOG_){
-        auto ui = dynamic_cast<UI_Dialog*>(_uiMap.find(uiType)->second);
-        ui->showUI();
     }
     updateUI(uiType);
     
@@ -121,9 +130,6 @@ void UIManage::showUIToScene(GAME_UI uiType,Scene* scene,bool isAdd){
         ui->showUI();
     }else if(uiType == UI_MAIN_){
         auto ui = dynamic_cast<UI_Main*>(_uiMap.find(uiType)->second);
-        ui->showUI();
-    }else if(uiType == UI_DIALOG_){
-        auto ui = dynamic_cast<UI_Dialog*>(_uiMap.find(uiType)->second);
         ui->showUI();
     }
     
@@ -184,6 +190,8 @@ bool UIManage::createUI(GAME_UI uiType){
 }
 
 void UIManage::updateUI(GAME_UI uiType){
+    if(_uiMap.find(uiType) == _uiMap.end()) return;
+    
     if (uiType == UI_SONGS_) {
         auto ui = dynamic_cast<UI_Songs*>(_uiMap.find(uiType)->second);
         ui->updateUI();

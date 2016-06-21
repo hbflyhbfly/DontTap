@@ -92,6 +92,9 @@ private:
 
     void updateResultUI();
     void updateDialogUI();
+    
+    void closeResultUI();
+    void closeMistake();
     void calculateResult();
 protected:
 //    void onDraw(const cocos2d::Mat4 &transform, uint32_t flags);

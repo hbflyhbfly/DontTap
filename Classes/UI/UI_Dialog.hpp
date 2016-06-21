@@ -23,15 +23,14 @@ public:
     CREATE_FUNC(UI_Dialog);
     void updateUI();
     void closeUI();
-    void showUI();
+    void showUI(DIALOG_TYPE type);
     void showCallback();
     void closeCallback();
     void updateUI(const std::string& str);
-    void setStr(const std::string& str,DIALOG_TYPE type ){
-        _str = str;
-        _type = type;
-    };
-    
+    void setStr(const std::string& str,DIALOG_TYPE type );
+private:
+    void touchEvent(Ref *pSender, cocos2d::ui::Widget::TouchEventType type);
+
 private:
     DIALOG_TYPE _type;
     std::string _str;

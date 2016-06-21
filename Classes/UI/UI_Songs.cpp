@@ -113,6 +113,13 @@ void UI_Songs::updateUI(){
     }else{
         playMode->loadTextures("res/textures/shuffle.png", "res/textures/shuffle.png","",cocos2d::ui::Button::TextureResType::PLIST);
     }
+    
+    auto listPanel = dynamic_cast<cocos2d::ui::Layout*>(_uiNode->getChildByName("list_panel"));
+
+    auto tableView = dynamic_cast<TableView*>(listPanel->getChildByTag(1));
+    if(tableView){
+        tableView->reloadData();
+    }
 //    auto token = dynamic_cast<Text*>(n->getChildByName("token_text"));
 //    int count = GameController::getInstance()->getUserData("token", DATA_INT).GetInt();
 //    token->setString(StringUtils::format("%d",count));
@@ -133,11 +140,19 @@ void UI_Songs::tableCellTouched(TableView* table, TableViewCell* cell)
     if(GameController::getInstance()->haveBuy(music["id"].GetString())){
         GameController::getInstance()->selectMusic(music["id"].GetString());
     }else{
-        GameController::getInstance()->buyMusic(music["id"].GetString());
+        bool noToken = GameController::getInstance()->buyMusic(music["id"].GetString());
+        if (!noToken) {
+            UIManage::getInstance()->showDialog(DIALOG_AD_WATCH_, GameController
+                                                ::getInstance()->getTidForKey("Insufficient coins"));
+        }
     }
-    table->updateCellAtIndex(cell->getIdx());
+//    table->updateCellAtIndex(cell->getIdx());
     
-    UIManage::getInstance()->updateUI(UI_SONGS_);
+    int count = GameController::getInstance()->getMusicCount();
+    for (int i = 0; i<count; i++) {
+        table->updateCellAtIndex(i);
+    }
+//    UIManage::getInstance()->updateUI(UI_SONGS_);
 }
 
 Size UI_Songs::tableCellSizeForIndex(TableView *table, ssize_t idx)
@@ -196,8 +211,18 @@ void UI_Songs::setTableCell(ssize_t idx,TableViewCell& cell,bool isAdd){
         checkImage->setVisible(true);
         checkImage->loadTexture("res/textures/check.png",cocos2d::ui::Button::TextureResType::PLIST);
     }
+    
+    
     if(checkImage->isVisible()){
         checkImage->setVisible(GameController::getInstance()->isSelectedMusic(music["id"].GetString()));
+    }
+    
+    if (costBtn->isVisible()) {
+        if(GameController::getInstance()->getToken() >= music["price"].GetInt()){
+            costBtn->setColor(Color3B::WHITE);
+        }else{
+            costBtn->setColor(Color3B::GRAY);
+        }
     }
     
     cost->setString(StringUtils::format("%d",costNum));

@@ -21,6 +21,7 @@
 
 #include "cocos2d.h"
 
+#include "UIManage.hpp"
 
 #define LOG_METHOD_NAME_TO_CONSOLE_WITH_STRING(str) [self logToConsole:[NSString stringWithFormat:@"%@ %@", NSStringFromSelector(_cmd), str]]
 
@@ -45,6 +46,7 @@
 /** Called when a user successfully completes viewing an ad */
 - (void)didCompleteAdWithTag: (NSString *) tag{
     GameController::getInstance()->addTokenForAdReward(500);
+    UIManage::getInstance()->updateUI(UI_SONGS_);
 //    LOG_METHOD_NAME_TO_CONSOLE_WITH_STRING(tag);
 }
 /** Called when a user does not complete the viewing of an ad */

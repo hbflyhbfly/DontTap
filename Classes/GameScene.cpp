@@ -17,6 +17,8 @@
 #include "GameController.hpp"
 #include "hy_function.h"
 #include "ad_function.h"
+#include "UIManage.hpp"
+
 USING_NS_CC;
 USING_NS_CC_EXT;
 
@@ -47,6 +49,8 @@ _targetForRelay(0){
 GameScene::~GameScene(){
     _groupData.Clear();
     _gameOverUINode->release();
+    _gameOverDialogUINode->release();
+
 }
 bool GameScene::init(){
     if (!LayerColor::initWithColor(Color4B::WHITE)) {
@@ -164,7 +168,7 @@ void GameScene::touchEvent(Ref *pSender, Widget::TouchEventType type){
             GameController::getInstance()->playSoundEffect(StringUtils::format("%d.mp3",n),true);
             if (name == "continue_btn") {
                 gameContinue();
-                _gameOverDialogUINode->removeFromParentAndCleanup(false);
+                
             }else if(name == "over_btn"){
 //                GameController::getInstance()->toScene(MAIN_SCENE);
                 showGameOverUI(GAME_FAIL);
@@ -858,6 +862,11 @@ void GameScene::gameContinue(){
             
         }
         _continueToken*=2;
+        
+        closeMistake();
+    }else{
+        UIManage::getInstance()->showDialog(DIALOG_AD_WATCH_, GameController
+                                            ::getInstance()->getTidForKey("Insufficient coins"));
     }
 }
 void GameScene::calculateResult(){
@@ -1156,6 +1165,13 @@ void GameScene::updateDialogUI(){
 
     }
     GameController::getInstance()->updateLanguage(_gameOverDialogUINode);
+}
+
+void GameScene::closeResultUI(){
+    _gameOverUINode->removeFromParentAndCleanup(false);
+}
+void GameScene::closeMistake(){
+    _gameOverDialogUINode->removeFromParentAndCleanup(false);
 }
 //ui
 //void GameScene::onDraw(const cocos2d::Mat4 &transform, uint32_t flags){

@@ -41,10 +41,50 @@ bool UI_Dialog::init(){
 //    _action->retain();
     _uiNode->runAction(_action);
     
+    
+    Button* videoBtn = dynamic_cast<Button*>(_uiNode->getChildByName("Panel")->getChildByName("ok_btn"));
+    Button* closeBtn = dynamic_cast<Button*>(_uiNode->getChildByName("Panel")->getChildByName("close_btn"));
+    
+    videoBtn->addTouchEventListener(CC_CALLBACK_2(UI_Dialog::touchEvent, this));
+    closeBtn->addTouchEventListener(CC_CALLBACK_2(UI_Dialog::touchEvent, this));
+    
     this->addChild(_uiNode);
     
     
     return true;
+}
+
+void UI_Dialog::touchEvent(Ref *pSender, Widget::TouchEventType type){
+    Button* btn = dynamic_cast<Button*>(pSender);
+    const std::string name = btn->getName();
+    switch (type)
+    {
+        case Widget::TouchEventType::BEGAN:
+            break;
+            
+        case Widget::TouchEventType::MOVED:
+            break;
+            
+        case Widget::TouchEventType::ENDED:
+        {
+            if (name == "ok_btn") {
+                if(_type == DIALOG_AD_WATCH_){
+                    ad_function::instance()->incentivized();
+                }
+                UIManage::getInstance()->closeUI(UI_DIALOG_);
+            }else if(name == "close_btn"){
+                UIManage::getInstance()->closeUI(UI_DIALOG_);
+            }
+            GameController::getInstance()->playSoundForClick();
+        }
+            break;
+            
+        case Widget::TouchEventType::CANCELED:
+            break;
+            
+        default:
+            break;
+    }
 }
 
 void UI_Dialog::onEnter(){
@@ -57,18 +97,36 @@ void UI_Dialog::onEnter(){
 //    ad_function::instance()->hideBanner();
 }
 
+void UI_Dialog::setStr(const std::string& str,DIALOG_TYPE type ){
+    _str = str;
+    
+    
+};
 void UI_Dialog::updateUI(){
     auto text = dynamic_cast<Text*>(_uiNode->getChildByName("Panel")->getChildByName("text"));
+    text->setTextAreaSize(Size(350, 90));
     text->setString(_str);
+    
 }
 
-void UI_Dialog::showUI(){
+void UI_Dialog::showUI(DIALOG_TYPE type){
+    _type = type;
     _action->setLastFrameCallFunc(CC_CALLBACK_0(UI_Dialog::showCallback, this));
-    _action->play("show", false);
+    if (_type == DIALOG_AD_REWARD_) {
+        _action->play("show_reward", false);
+    }else if (_type == DIALOG_AD_WATCH_){
+        _action->play("show_dialog", false);
+    }
+    
 }
 void UI_Dialog::closeUI(){
     _action->setLastFrameCallFunc(CC_CALLBACK_0(UI_Dialog::closeCallback, this));
-    _action->play("close", false);
+    
+    if (_type == DIALOG_AD_REWARD_) {
+        _action->play("close_reward", false);
+    }else if (_type == DIALOG_AD_WATCH_){
+        _action->play("close_dialog", false);
+    }
 }
 
 void UI_Dialog::showCallback(){

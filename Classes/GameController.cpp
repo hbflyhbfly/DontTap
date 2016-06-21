@@ -553,15 +553,15 @@ const char* GameController::getTidForKey(const char* key){
 }
 
 Color4F GameController::randomColor(){
-    if (_colorDoc.IsArray()) {
-        int n = hy_function::instance()->randomFrom(0,_colorDoc.Size()-1);
-        rapidjson::Value& arrayValue = _colorDoc[n];
-        int r = arrayValue["color_red"].GetInt();
-        int g = arrayValue["color_green"].GetInt();
-        int b = arrayValue["color_blue"].GetInt();
-        
-        return Color4F(Color4B(r,g,b,255));
-    }
+//    if (_colorDoc.IsArray()) {
+//        int n = hy_function::instance()->randomFrom(0,_colorDoc.Size()-1);
+//        rapidjson::Value& arrayValue = _colorDoc[n];
+//        int r = arrayValue["color_red"].GetInt();
+//        int g = arrayValue["color_green"].GetInt();
+//        int b = arrayValue["color_blue"].GetInt();
+//        
+//        return Color4F(Color4B(r,g,b,255));
+//    }
     return Color4F::BLACK;
 }
 
@@ -575,6 +575,8 @@ bool GameController::buyMusic(const std::string& id){
             addToken(-cost);
             selectMusic(id);
             return true;
+        }else{
+            return false;
         }
     }
     return false;

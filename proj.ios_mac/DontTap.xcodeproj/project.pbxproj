@@ -14,6 +14,10 @@
 		288765A50DF7441C002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765A40DF7441C002DB57D /* CoreGraphics.framework */; };
 		2B22A9311D15B2DC0092AE22 /* local.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2B22A9331D15B2DC0092AE22 /* local.strings */; };
 		2B22A93B1D17C3030092AE22 /* UTDID.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B22A93A1D17C3030092AE22 /* UTDID.framework */; };
+		2B22A9661D1919B10092AE22 /* AdMoGoAdapterInmobiSDK.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B22A9541D1919B10092AE22 /* AdMoGoAdapterInmobiSDK.m */; };
+		2B22A9671D1919B10092AE22 /* AdMoGoAdapterInmobiSDKFullScreen.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B22A9561D1919B10092AE22 /* AdMoGoAdapterInmobiSDKFullScreen.m */; };
+		2B22A9681D1919B10092AE22 /* InMobiNativeAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B22A9581D1919B10092AE22 /* InMobiNativeAdapter.m */; };
+		2B22A9691D1919B10092AE22 /* libInMobi-5.2.1.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B22A9651D1919B10092AE22 /* libInMobi-5.2.1.a */; };
 		2B3B73BA1D069F520080A07F /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B3B73B91D069F520080A07F /* Accelerate.framework */; };
 		2B3B73BC1D069F5F0080A07F /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B3B73BB1D069F5F0080A07F /* CoreText.framework */; };
 		2B3B73BE1D069F680080A07F /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B3B73BD1D069F680080A07F /* AudioToolbox.framework */; };
@@ -365,6 +369,23 @@
 		2B22A9321D15B2DC0092AE22 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/local.strings; sourceTree = "<group>"; };
 		2B22A9341D15B5760092AE22 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/local.strings"; sourceTree = "<group>"; };
 		2B22A93A1D17C3030092AE22 /* UTDID.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = UTDID.framework; sourceTree = "<group>"; };
+		2B22A9531D1919B10092AE22 /* AdMoGoAdapterInmobiSDK.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AdMoGoAdapterInmobiSDK.h; sourceTree = "<group>"; };
+		2B22A9541D1919B10092AE22 /* AdMoGoAdapterInmobiSDK.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AdMoGoAdapterInmobiSDK.m; sourceTree = "<group>"; };
+		2B22A9551D1919B10092AE22 /* AdMoGoAdapterInmobiSDKFullScreen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AdMoGoAdapterInmobiSDKFullScreen.h; sourceTree = "<group>"; };
+		2B22A9561D1919B10092AE22 /* AdMoGoAdapterInmobiSDKFullScreen.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AdMoGoAdapterInmobiSDKFullScreen.m; sourceTree = "<group>"; };
+		2B22A9571D1919B10092AE22 /* InMobiNativeAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InMobiNativeAdapter.h; sourceTree = "<group>"; };
+		2B22A9581D1919B10092AE22 /* InMobiNativeAdapter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InMobiNativeAdapter.m; sourceTree = "<group>"; };
+		2B22A95B1D1919B10092AE22 /* IMBanner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IMBanner.h; sourceTree = "<group>"; };
+		2B22A95C1D1919B10092AE22 /* IMBannerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IMBannerDelegate.h; sourceTree = "<group>"; };
+		2B22A95D1D1919B10092AE22 /* IMCommonConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IMCommonConstants.h; sourceTree = "<group>"; };
+		2B22A95E1D1919B10092AE22 /* IMCustomNative.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IMCustomNative.h; sourceTree = "<group>"; };
+		2B22A95F1D1919B10092AE22 /* IMInterstitial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IMInterstitial.h; sourceTree = "<group>"; };
+		2B22A9601D1919B10092AE22 /* IMInterstitialDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IMInterstitialDelegate.h; sourceTree = "<group>"; };
+		2B22A9611D1919B10092AE22 /* IMNative.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IMNative.h; sourceTree = "<group>"; };
+		2B22A9621D1919B10092AE22 /* IMNativeDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IMNativeDelegate.h; sourceTree = "<group>"; };
+		2B22A9631D1919B10092AE22 /* IMRequestStatus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IMRequestStatus.h; sourceTree = "<group>"; };
+		2B22A9641D1919B10092AE22 /* IMSdk.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IMSdk.h; sourceTree = "<group>"; };
+		2B22A9651D1919B10092AE22 /* libInMobi-5.2.1.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libInMobi-5.2.1.a"; sourceTree = "<group>"; };
 		2B3B73001D069E760080A07F /* GameConst.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameConst.h; sourceTree = "<group>"; };
 		2B3B73B91D069F520080A07F /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.3.sdk/System/Library/Frameworks/Accelerate.framework; sourceTree = DEVELOPER_DIR; };
 		2B3B73BB1D069F5F0080A07F /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.3.sdk/System/Library/Frameworks/CoreText.framework; sourceTree = DEVELOPER_DIR; };
@@ -766,7 +787,7 @@
 		503AE0F717EB97AB00D1A890 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		503AE0FA17EB989F00D1A890 /* AppController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppController.h; path = ios/AppController.h; sourceTree = SOURCE_ROOT; };
 		503AE0FB17EB989F00D1A890 /* AppController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppController.mm; path = ios/AppController.mm; sourceTree = SOURCE_ROOT; };
-		503AE0FC17EB989F00D1A890 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = ios/main.m; sourceTree = SOURCE_ROOT; };
+		503AE0FC17EB989F00D1A890 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = ios/main.m; sourceTree = SOURCE_ROOT; wrapsLines = 0; };
 		503AE0FD17EB989F00D1A890 /* Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Prefix.pch; path = ios/Prefix.pch; sourceTree = SOURCE_ROOT; };
 		503AE0FE17EB989F00D1A890 /* RootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RootViewController.h; path = ios/RootViewController.h; sourceTree = SOURCE_ROOT; };
 		503AE0FF17EB989F00D1A890 /* RootViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = RootViewController.mm; path = ios/RootViewController.mm; sourceTree = SOURCE_ROOT; };
@@ -820,6 +841,7 @@
 				2B3B73E81D06A0540080A07F /* MediaPlayer.framework in Frameworks */,
 				2B3B73E61D06A04B0080A07F /* MapKit.framework in Frameworks */,
 				2B3B73E41D06A0410080A07F /* libz.1.2.5.tbd in Frameworks */,
+				2B22A9691D1919B10092AE22 /* libInMobi-5.2.1.a in Frameworks */,
 				2B3B73E21D06A0370080A07F /* ImageIO.framework in Frameworks */,
 				2B22A93B1D17C3030092AE22 /* UTDID.framework in Frameworks */,
 				2B3B73E01D06A02E0080A07F /* iAd.framework in Frameworks */,
@@ -1020,6 +1042,54 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		2B22A9511D1919B10092AE22 /* InMobi_SDK_521 */ = {
+			isa = PBXGroup;
+			children = (
+				2B22A9521D1919B10092AE22 /* AdsMoGoAdapter */,
+				2B22A9591D1919B10092AE22 /* Libs */,
+			);
+			path = InMobi_SDK_521;
+			sourceTree = "<group>";
+		};
+		2B22A9521D1919B10092AE22 /* AdsMoGoAdapter */ = {
+			isa = PBXGroup;
+			children = (
+				2B22A9531D1919B10092AE22 /* AdMoGoAdapterInmobiSDK.h */,
+				2B22A9541D1919B10092AE22 /* AdMoGoAdapterInmobiSDK.m */,
+				2B22A9551D1919B10092AE22 /* AdMoGoAdapterInmobiSDKFullScreen.h */,
+				2B22A9561D1919B10092AE22 /* AdMoGoAdapterInmobiSDKFullScreen.m */,
+				2B22A9571D1919B10092AE22 /* InMobiNativeAdapter.h */,
+				2B22A9581D1919B10092AE22 /* InMobiNativeAdapter.m */,
+			);
+			path = AdsMoGoAdapter;
+			sourceTree = "<group>";
+		};
+		2B22A9591D1919B10092AE22 /* Libs */ = {
+			isa = PBXGroup;
+			children = (
+				2B22A95A1D1919B10092AE22 /* Headers */,
+				2B22A9651D1919B10092AE22 /* libInMobi-5.2.1.a */,
+			);
+			path = Libs;
+			sourceTree = "<group>";
+		};
+		2B22A95A1D1919B10092AE22 /* Headers */ = {
+			isa = PBXGroup;
+			children = (
+				2B22A95B1D1919B10092AE22 /* IMBanner.h */,
+				2B22A95C1D1919B10092AE22 /* IMBannerDelegate.h */,
+				2B22A95D1D1919B10092AE22 /* IMCommonConstants.h */,
+				2B22A95E1D1919B10092AE22 /* IMCustomNative.h */,
+				2B22A95F1D1919B10092AE22 /* IMInterstitial.h */,
+				2B22A9601D1919B10092AE22 /* IMInterstitialDelegate.h */,
+				2B22A9611D1919B10092AE22 /* IMNative.h */,
+				2B22A9621D1919B10092AE22 /* IMNativeDelegate.h */,
+				2B22A9631D1919B10092AE22 /* IMRequestStatus.h */,
+				2B22A9641D1919B10092AE22 /* IMSdk.h */,
+			);
+			path = Headers;
+			sourceTree = "<group>";
+		};
 		2B3B72FF1D069E760080A07F /* Config */ = {
 			isa = PBXGroup;
 			children = (
@@ -1101,6 +1171,7 @@
 		2BDFB53E1D117170003E2E61 /* AdNetworkLibs */ = {
 			isa = PBXGroup;
 			children = (
+				2B22A9511D1919B10092AE22 /* InMobi_SDK_521 */,
 				2BDFB53F1D117170003E2E61 /* AdMob_SDK_771 */,
 				2BDFB54F1D117170003E2E61 /* Baidu_SDK_340 */,
 				2BDFB5621D117170003E2E61 /* DoMob_SDK_471_Video_220 */,
@@ -2043,7 +2114,9 @@
 				2BB8EC251D10152300DD2335 /* UI_Dialog.cpp in Sources */,
 				2B3B79691D07C56D0080A07F /* AdsMogoConstant.mm in Sources */,
 				2BB8EBB21D0E743300DD2335 /* UIManage.cpp in Sources */,
+				2B22A9671D1919B10092AE22 /* AdMoGoAdapterInmobiSDKFullScreen.m in Sources */,
 				2BDFB6751D117170003E2E61 /* AdMoGoAdapterBaiduSplash.m in Sources */,
+				2B22A9661D1919B10092AE22 /* AdMoGoAdapterInmobiSDK.m in Sources */,
 				2BDFB6831D117170003E2E61 /* GDTMobNativeAdapter.m in Sources */,
 				2BB8C28C1CFC289E0048B720 /* hy_function.cpp in Sources */,
 				2BA8CB5D1CD5F75700BC3140 /* BlockSprite.cpp in Sources */,
@@ -2060,6 +2133,7 @@
 				503AE10117EB989F00D1A890 /* main.m in Sources */,
 				2BB8EBB71D0E9BD900DD2335 /* UI_Songs.cpp in Sources */,
 				2BDFAF1B1D113661003E2E61 /* GameCenterManage.m in Sources */,
+				2B22A9681D1919B10092AE22 /* InMobiNativeAdapter.m in Sources */,
 				2BA8CB511CD5074800BC3140 /* GameScene.cpp in Sources */,
 				2BA8CB4E1CD500E900BC3140 /* MainScene.cpp in Sources */,
 				2BDFB67B1D117170003E2E61 /* AdMoGoAdapterDMbVideoAd.m in Sources */,
@@ -2111,7 +2185,6 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer: Xinxin Cai (84X8SU83SP)";
 				COMPRESS_PNG_FILES = NO;
@@ -2199,6 +2272,7 @@
 					"$(PROJECT_DIR)/AdNetworkLibs/zmedia_SDK_103/模拟器/lib",
 					"$(PROJECT_DIR)/AdNetworkLibs/zmedia_SDK_103/设备/lib",
 					"$(PROJECT_DIR)/AdNetworkLibs/ZSHD_SDK_120/PagodaPearl_lib",
+					"$(PROJECT_DIR)/AdNetworkLibs/InMobi_SDK_521/Libs",
 				);
 				OTHER_LDFLAGS = (
 					"$(_COCOS_LIB_IOS_BEGIN)",
@@ -2219,7 +2293,6 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer: Xinxin Cai (84X8SU83SP)";
 				COMPRESS_PNG_FILES = NO;
@@ -2305,6 +2378,7 @@
 					"$(PROJECT_DIR)/AdNetworkLibs/zmedia_SDK_103/模拟器/lib",
 					"$(PROJECT_DIR)/AdNetworkLibs/zmedia_SDK_103/设备/lib",
 					"$(PROJECT_DIR)/AdNetworkLibs/ZSHD_SDK_120/PagodaPearl_lib",
+					"$(PROJECT_DIR)/AdNetworkLibs/InMobi_SDK_521/Libs",
 				);
 				OTHER_LDFLAGS = (
 					"$(_COCOS_LIB_IOS_BEGIN)",
