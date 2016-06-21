@@ -28,8 +28,13 @@
 
 #define UnityAd_Video_Zone                  @"rewardedVideoZone"
 
-#define Mogo_Key                            "1439c215fbd4451994ea6f3fa745a48d"
+#define Mogo_Key_Iphone                            "1439c215fbd4451994ea6f3fa745a48d"
+
+#define Mogo_Key_Ipad                            "f503d6ce4a6449c28fdee5aa41e48bf6"
+
 
 #define Heyzap_Key                          @"f06c52a87c0f80d96ba79ddac480819f"
 #define Umeng_Key                            "5729b142e0f55a7dde001154"
-#endif /* GameConst_h */
+#endif 
+
+/* GameConst_h */

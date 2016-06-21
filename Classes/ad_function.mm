@@ -90,8 +90,14 @@ ad_function* ad_function::instance()
 }
 
 void ad_function::prepareBanner(){
-    AdsmogoBanner::sharedBanner()->createBanner(Mogo_Key,AdsmogoBannerTypeNormalBanner,
-                                                AdMoGoPointTypeDown_middle,false);
+    
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+        AdsmogoBanner::sharedBanner()->createBanner(Mogo_Key_Iphone,AdsmogoBannerTypeNormalBanner,
+                                                    AdMoGoPointTypeDown_middle,false);
+    }else{
+        AdsmogoBanner::sharedBanner()->createBanner(Mogo_Key_Ipad,AdsmogoBannerTypeLargeBanner,
+                                                    AdMoGoPointTypeDown_middle,false);
+    }
     
     
     hideBanner();
