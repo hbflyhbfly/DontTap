@@ -19,7 +19,8 @@ typedef enum {
     GAME_FAIL = 0,
     GAME_SUCCESS = 1,
     GAME_TAP_MISTAKE = 2,
-    GAME_OVER = 3
+    GAME_CANT_PURSUE = 4,
+    GAME_OVER = 5
     
 } GAME_RESULT;
 

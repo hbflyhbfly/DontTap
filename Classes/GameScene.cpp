@@ -528,7 +528,14 @@ void GameScene::checkPosition(float dt){
         if (block->canTap() && !block->isTaped()) {
             Vec2 p = _blockLayer->convertToWorldSpace(block->getPosition());
             if (p.y <= -_blockSize.height) {
-                gameOver(GAME_OVER);
+                if (GameController::getInstance()->getType() == GAME_TYPE_ARCADE ||
+                    GameController::getInstance()->getType() == GAME_TYPE_ARCADE_2 ||
+                    GameController::getInstance()->getType() == GAME_TYPE_RUSH) {
+                    gameOver(GAME_CANT_PURSUE);
+                }else{
+                    gameOver(GAME_OVER);
+                }
+                
                 GameController::getInstance()->playSoundEffect("error_piano.m4a", false);
                 return;
             }
@@ -821,10 +828,21 @@ void GameScene::gameOver(GAME_RESULT result){
             showGameOverUI(result);
             
         }),NULL));
+    }else if(result == GAME_CANT_PURSUE){
+        GameController::getInstance()->playSoundEffect("error_piano.m4a", false);
+        
+        moveForBack();
+        
+        this->runAction(Sequence::create(
+                                         DelayTime::create(0.6f),
+                                         CallFunc::create([result,this](){
+            showGameOverUI(result);
+            
+        }),NULL));
     }else if(result == GAME_SUCCESS){
         showGameOverUI(result);
         GameController::getInstance()->gameOver(result);
-    }else{
+    }else if(result == GAME_OVER){
         GameController::getInstance()->playSoundEffect("error_piano.m4a", false);
 
         moveForBack();
@@ -915,13 +933,20 @@ void GameScene::showGameOverUI(GAME_RESULT result){
             //(97,236,79)
             break;
         case GAME_OVER:
-            if(!_gameOverUINode->getParent()){
-                this->addChild(_gameOverUINode);
+            
+            if(!_gameOverDialogUINode->getParent()){
+                this->addChild(_gameOverDialogUINode);
             }
-            _gameOverAction->play("show", false);
+            _gameOverDialogAction->play("show", false);
             layout->setBackGroundColor(Color3B(50,50,132));
             break;
         case GAME_TAP_MISTAKE:
+            if(!_gameOverDialogUINode->getParent()){
+                this->addChild(_gameOverDialogUINode);
+            }
+            _gameOverDialogAction->play("show", false);
+            break;
+        case GAME_CANT_PURSUE:
             if(!_gameOverDialogUINode->getParent()){
                 this->addChild(_gameOverDialogUINode);
             }
@@ -997,6 +1022,17 @@ void GameScene::showDone(){
             }
             
             break;
+        case GAME_CANT_PURSUE:
+            if(!_gameOverUINode->getParent()){
+                this->addChild(_gameOverUINode);
+            }
+            if(GameController::getInstance()->getType() != GAME_TYPE_CLASSICS){
+                _gameOverAction->play("game_success", true);
+            }else{
+                _gameOverAction->play("game_fail", true);
+            }
+            
+            break;
 
         default:
             break;
@@ -1034,7 +1070,15 @@ void GameScene::dialogShowDone(){
                 _gameOverDialogAction->play("game_success", true);
             }
             
-            
+        case GAME_CANT_PURSUE:
+            if(!_gameOverDialogUINode->getParent()){
+                this->addChild(_gameOverDialogUINode);
+            }
+            if (GameController::getInstance()->getType() == GAME_TYPE_CLASSICS) {
+                _gameOverDialogAction->play("game_fail", true);
+            }else{
+                _gameOverDialogAction->play("game_success", true);
+            }
             break;
             
         default:
