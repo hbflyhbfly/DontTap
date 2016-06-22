@@ -59,6 +59,7 @@
         if (result) {
             [HZIncentivizedAd setDelegate:self];
             [HZIncentivizedAd show];
+//            [HZIncentivizedAd fetch];
         }
     }];
 }

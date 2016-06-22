@@ -29,6 +29,8 @@
 #define UnityAd_Video_Zone                  @"rewardedVideoZone"
 
 #define Mogo_Key_Iphone                            "1439c215fbd4451994ea6f3fa745a48d"
+//#define Mogo_Key_Iphone                            "1925ba1391214fbcb9e5e223fda352f6"
+
 
 #define Mogo_Key_Ipad                            "f503d6ce4a6449c28fdee5aa41e48bf6"
 
